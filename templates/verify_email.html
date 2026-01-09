@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}DDC Register{% endblock %}
+
+{% block content %}
+
+{% if erreur %}
+<div class="max-w-md mx-auto mt-6 mb-4">
+    <div class="bg-red-50 text-red-800 border border-red-200 px-4 py-3 rounded-xl shadow-sm flex items-start gap-3">
+        <span class="text-red-500 text-xl font-bold leading-none mt-0.5">!</span>
+        <p class="text-sm md:text-base">
+            {{ erreur }}
+        </p>
+    </div>
+</div>
+{% endif %}
+
+<div class="flex items-center justify-center pt-10 pb-10">
+
+    <div class="w-full max-w-md bg-white border border-slate-200 rounded-xl shadow-sm px-6 py-7 space-y-4">
+
+        <form method="POST" action="{{ url_for('auth.verify_email') }}" class="space-y-4">
+
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <h1 class="text-2xl font-bold text-slate-900 text-center">
+                Vérification email
+            </h1>
+
+            <p class="text-sm text-slate-500 text-center">
+                Un code a été envoyé à ton adresse email.<br>
+                Entre-le ci-dessous pour confirmer ton compte.
+            </p>
+
+            <div>
+                <label for="code" class="block text-sm font-medium text-slate-700 mb-1.5">
+                    Code de vérification
+                </label>
+                <input name="code" id="code" type="text" placeholder="123456" class="w-full rounded-lg border border-slate-300 bg-slate-50/60 px-3 py-2 text-sm
+                              focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                <p class="text-xs text-slate-500 mt-1">
+                    Le code est valable 10 minutes. Tu as 5 tentatives maximum.
+                </p>
+            </div>
+
+            <button type="submit" class="w-full bg-emerald-600 text-white text-sm font-semibold py-2.5 rounded-lg shadow-sm
+                           hover:bg-emerald-500 hover:shadow-md transition active:scale-[0.99]">
+                Vérifier
+            </button>
+
+        </form>
+
+        
+        <form method="POST" action="{{ url_for('auth.resend_email_code') }}" class="pt-1">
+
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button id="resend-btn" type="submit" disabled class="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-slate-200 text-slate-700 text-sm font-medium opacity-50 cursor-not-allowed transition">
+                Renvoyer le code (30s)
+            </button>
+        </form>
+
+        <p class="text-xs text-slate-500 text-center pt-2">
+            Si tu n'as pas reçu de mail, vérifie tes spams. Tu peux aussi renvoyer le code après quelques secondes.
+            Si tu ne reçois toujours pas le mail, réessaie encore ou contacte le support (contact@deldevcode.org).
+        </p>
+
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const btn = document.getElementById("resend-btn");
+        if (!btn) return;
+
+        let remaining = 30;
+        const baseText = "Renvoyer le code";
+
+        btn.textContent = `${baseText} (${remaining}s)`;
+
+        const interval = setInterval(() => {
+            remaining -= 1;
+
+            if (remaining <= 0) {
+                clearInterval(interval);
+                btn.disabled = false;
+                btn.classList.remove("opacity-50", "cursor-not-allowed");
+                btn.classList.remove("bg-slate-200");
+                btn.classList.add("bg-emerald-50", "text-emerald-700", "hover:bg-emerald-100");
+                btn.textContent = baseText;
+            } else {
+                btn.textContent = `${baseText} (${remaining}s)`;
+            }
+        }, 1000);
+    });
+</script>
+
+{% endblock %}

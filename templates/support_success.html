@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Support – Ticket créé{% endblock %}
+
+{% block content %}
+
+<div class="max-w-md mx-auto mt-10 mb-12">
+
+    <section class="bg-white border border-emerald-200 rounded-2xl shadow-sm p-6 space-y-4">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-emerald-600 flex items-center justify-center text-white text-xl">
+                ✓
+            </div>
+            <div>
+                <h1 class="text-xl md:text-2xl font-bold text-slate-900">
+                    Ton ticket a bien été créé
+                </h1>
+                <p class="text-sm text-slate-600">
+                    Merci, ta demande a été envoyée à l’équipe DelDevCode.
+                </p>
+            </div>
+        </div>
+
+        <div class="text-sm text-slate-700 space-y-1">
+            <p>
+                Un email de confirmation a été envoyé à :
+                <span class="font-mono text-slate-900">{{ email }}</span>
+            </p>
+            <p>
+                Tu recevras une réponse directement par email lorsque ton ticket sera traité.
+            </p>
+        </div>
+
+        <div class="pt-2 flex flex-col gap-2">
+            <a href="{{ url_for('support.support_form') }}" class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-500">
+                Ouvrir un autre ticket
+            </a>
+            <a href="{{ url_for('chat.index') }}" class="inline-flex items-center justify-center px-4 py-2 rounded-lg border border-slate-300 text-slate-800 text-xs font-medium hover:bg-slate-50">
+                Retourner à l'acceuil
+            </a>
+        </div>
+    </section>
+
+</div>
+
+{% endblock %}

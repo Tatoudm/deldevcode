@@ -1,0 +1,12 @@
+flask
+flask-limiter
+python-dotenv
+pymongo
+bcrypt
+pytz
+dnspython
+flask-sock
+gunicorn
+gevent
+flask-wtf
+stripe

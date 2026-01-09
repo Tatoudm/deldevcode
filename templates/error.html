@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Erreur {{ code }} - DDC{% endblock %}
+
+{% block content %}
+
+<div class="max-w-3xl mx-auto mt-12 mb-10">
+
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm px-6 py-8 text-center space-y-4">
+
+        
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-100 mb-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span class="text-[11px] font-semibold tracking-wide uppercase text-emerald-700">
+                Oups, une petite erreur
+            </span>
+        </div>
+
+        
+        <p class="text-sm text-slate-500 mb-1">
+            Code d'erreur : <span class="font-mono font-semibold text-slate-700">{{ code }}</span>
+        </p>
+
+        
+        <h1 class="text-2xl md:text-3xl font-bold text-slate-900">
+            {{ title|safe }}
+        </h1>
+
+        
+        <p class="text-sm md:text-base text-slate-700 leading-relaxed max-w-xl mx-auto">
+            {{ message|safe }}
+        </p>
+
+        {% if extra %}
+        <p class="text-xs md:text-sm text-slate-500 leading-relaxed max-w-xl mx-auto">
+            {{ extra|safe }}
+        </p>
+        {% endif %}
+
+        
+        <div class="flex flex-wrap justify-center gap-3 pt-3">
+            {% if home_url %}
+            <a href="{{ home_url }}" class="inline-flex items-center justify-center px-5 py-2.5 rounded-md bg-emerald-600 text-white text-sm md:text-base font-medium hover:bg-emerald-500 transition">
+                Revenir à la maison
+            </a>
+            {% endif %}
+
+            {% if show_contact %}
+            <a href="/support" class="inline-flex items-center justify-center px-4 py-2.5 rounded-md border border-slate-300 text-slate-800 text-xs md:text-sm font-medium hover:bg-slate-100 transition">
+                Contacter le support
+            </a>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <p class="text-[11px] text-center text-slate-400">
+        Si besoin, n’hésite pas à écrire à
+        <span class="font-mono">contact@deldevcode.org</span>.
+    </p>
+</div>
+
+{% endblock %}

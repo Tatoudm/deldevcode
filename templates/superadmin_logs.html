@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Logs admin{% endblock %}
+
+{% block content %}
+
+<div class="max-w-5xl mx-auto mt-8 space-y-6">
+
+    <section class="flex items-center justify-between gap-3">
+        <div>
+            <p class="text-xs uppercase tracking-wide text-emerald-600 font-semibold">
+                Zone superadmin
+            </p>
+            <h1 class="text-2xl md:text-3xl font-bold text-slate-900">
+                Logs des actions admin
+            </h1>
+            <p class="text-sm text-slate-600">
+                Tu vois ici les dernières actions effectuées par les admins (ban, mute, warn, suppression de messages,
+                impersonation, etc.). Ces logs sont stockés <span class="font-semibold">en local</span> dans un fichier.
+            </p>
+        </div>
+
+        <a href="{{ url_for('admin.superadmin_panel') }}" class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-medium hover:bg-slate-800 transition">
+            ⬅ Retour superadmin
+        </a>
+    </section>
+
+    <section class="bg-white border border-slate-200 rounded-2xl shadow-sm p-4">
+        {% if logs|length == 0 %}
+            <p class="text-sm text-slate-500">
+                Aucun log pour le moment. Les actions admin seront enregistrées ici au fur et à mesure.
+            </p>
+        {% else %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-slate-200 bg-slate-50">
+                            <th class="text-left px-3 py-2 font-semibold text-slate-700 text-xs uppercase tracking-wide">Heure</th>
+                            <th class="text-left px-3 py-2 font-semibold text-slate-700 text-xs uppercase tracking-wide">Admin</th>
+                            <th class="text-left px-3 py-2 font-semibold text-slate-700 text-xs uppercase tracking-wide">Action</th>
+                            <th class="text-left px-3 py-2 font-semibold text-slate-700 text-xs uppercase tracking-wide">Cible</th>
+                            <th class="text-left px-3 py-2 font-semibold text-slate-700 text-xs uppercase tracking-wide">Détails</th>
+                            <th class="text-left px-3 py-2 font-semibold text-slate-700 text-xs uppercase tracking-wide">IP</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        {% for log in logs %}
+                        <tr class="hover:bg-slate-50/60">
+                            <td class="px-3 py-2 font-mono text-[11px] text-slate-600">
+                                {{ log.time }}
+                            </td>
+                            <td class="px-3 py-2 text-slate-800">
+                                {{ log.actor }}
+                            </td>
+                            <td class="px-3 py-2">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-700">
+                                    {{ log.action }}
+                                </span>
+                            </td>
+                            <td class="px-3 py-2 text-slate-800">
+                                {{ log.target or "-" }}
+                            </td>
+                            <td class="px-3 py-2 text-slate-700">
+                                {{ log.details or "-" }}
+                            </td>
+                            <td class="px-3 py-2 text-[11px] font-mono text-slate-500">
+                                {{ log.ip or "-" }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </section>
+
+</div>
+
+{% endblock %}

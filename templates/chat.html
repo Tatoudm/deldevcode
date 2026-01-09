@@ -1,0 +1,1943 @@
+{% extends "base.html" %}
+{% block title %}DDC Chat{% endblock %}
+
+{% block content %}
+
+<div class="max-w-7xl mx-auto mt-8 space-y-6">
+
+    {% if erreur %}
+    <div id="chat-error" class="mb-2 transition-opacity duration-500">
+        <div class="bg-red-50 text-red-800 border border-red-200 px-4 py-3 rounded-xl shadow-sm flex items-start gap-3">
+            <span class="text-red-500 text-xl font-bold leading-none mt-0.5">!</span>
+            <p class="text-sm md:text-base">
+                {{ erreur }}
+            </p>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if success %}
+    <div id="chat-success" class="mb-2 transition-opacity duration-500">
+        <div class="bg-green-50 text-green-800 border border-green-200 px-4 py-3 rounded-xl shadow-sm flex items-start gap-3">
+            <span class="text-green-600 text-xl font-bold leading-none mt-0.5">✓</span>
+            <p class="text-sm md:text-base">
+                {{ success }}
+            </p>
+        </div>
+    </div>
+    {% endif %}
+
+
+
+
+    
+    <section class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div class="space-y-1">
+            <p class="text-xs uppercase tracking-wide text-emerald-600 font-semibold">
+                <span id="header-scope-label">Salon public · #general</span>
+            </p>
+            <h1 class="text-2xl md:text-3xl font-bold text-slate-900" id="header-title">
+                Chat anonyme en direct
+            </h1>
+            <p class="text-sm text-slate-600" id="header-subtitle">
+                Connecté en tant que <span class="font-semibold text-slate-900">{{ nom }}</span>.
+                Tout le monde voit tous les messages. Limite : 500 messages par heure.
+            </p>
+        </div>
+
+        <div class="flex items-center gap-3">
+            {% if pdp %}
+            <img src="{{ url_for('static', filename='pdp/' ~ pdp) }}" alt="Avatar" class="w-10 h-10 rounded-full border border-emerald-500 object-cover">
+            {% endif %}
+
+            <div class="flex flex-col items-end gap-1">
+                <div class="text-xs text-slate-500 text-right">
+                    <p class="font-medium text-slate-800">Messages supprimés après 1 heure</p>
+                    <p>Les messages sont liés à ton pseudo, pas à ton identité réelle.</p>
+                </div>
+
+                {% if is_admin %}
+                <a href="{{ url_for('admin.admin_panel') }}" class="inline-flex items-center px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-medium hover:bg-emerald-500 transition">
+                    Admin panel
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+
+        
+    <section class="grid gap-4 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)]">
+
+        
+        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm flex flex-col min-h-[420px] max-h-[600px]">
+            <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <span id="channel-title" class="text-sm font-semibold text-slate-800">
+                        Salon public
+                    </span>
+
+                    
+                    <div class="flex items-center gap-1 text-[11px]">
+                        <span id="ws-status-dot" class="inline-block w-2.5 h-2.5 rounded-full bg-slate-300"></span>
+
+                        <span id="ws-status-text" class="text-slate-500">Connexion…</span>
+
+                        <a href="/docs/status" class="ml-1 inline-flex items-center justify-center w-4 h-4 rounded-full bg-slate-200 text-slate-600 text-[10px] font-bold hover:bg-slate-300 hover:text-slate-800 transition" title="En savoir plus">
+                            ?
+                        </a>
+                    </div>
+                </div>
+
+                <span class="text-[11px] text-slate-400" id="channel-hint">
+                    Messages visibles pendant 1h
+                </span>
+            </div>
+
+            <div id="messages" class="flex-1 overflow-y-auto px-4 py-3 space-y-2 text-sm bg-slate-50">
+                {% if messages|length == 0 %}
+                    <p class="text-center text-xs text-slate-500 mt-4">
+                        Aucun message pour l’instant. Lance la conversation 👋
+                    </p>
+                {% else %}
+                    {% for msg in messages %}
+                    <div class="flex items-start gap-2">
+                        <img src="{{ url_for('static', filename='pdp/' ~ msg['author_pdp']) }}" class="w-8 h-8 rounded-full object-cover border border-slate-300">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                                <span class="font-semibold text-slate-800">
+                                    {{ msg['author'] }}
+                                </span>
+                                {% if msg['created_at'] %}
+                                <span>·</span>
+                                <span>
+                                    {{ msg['created_at'].strftime("%H:%M") }}
+                                </span>
+                                {% endif %}
+                            </div>
+                            <p class="text-slate-800 text-sm break-words">
+                                {{ msg['content'] }}
+                            </p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            {% if is_muted %}
+            
+            <div class="border-t border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+                {{ mute_message }}
+            </div>
+            {% else %}
+            
+            <form method="POST" class="border-t border-slate-200 bg-white px-4 py-3 flex gap-2">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="text" name="message" id="message-input" placeholder="Écris ton message…" maxlength="1000" class="flex-1 text-sm px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                <button type="submit" class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 transition">
+                    Envoyer
+                </button>
+            </form>
+            {% endif %}
+        </div>
+
+        
+        <aside class="space-y-3">
+
+            
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 text-sm">
+                <h2 class="font-semibold text-slate-900 mb-1.5 flex items-center gap-2">
+                    <span class="text-emerald-600 text-lg">📩</span>
+                    Conversations privées & groupes
+                </h2>
+
+                
+                <p class="text-xs text-slate-600 mb-2">
+                    Entre le pseudo de quelqu’un pour ouvrir un MP avec lui.
+                </p>
+                <form id="mp-form" class="flex gap-2 mb-3">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="text" id="mp-pseudo" placeholder="Pseudo…" class="flex-1 text-xs px-2 py-1.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                    <button type="submit" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-medium hover:bg-emerald-500 transition">
+                        Ouvrir
+                    </button>
+                </form>
+
+                
+                <button type="button" id="btn-back-general" class="w-full mb-3 inline-flex items-center justify-center px-3 py-1.5 rounded-lg border border-slate-200 text-xs text-slate-700 hover:bg-slate-50 transition">
+                    Revenir sur #general
+                </button>
+
+                <div class="mb-3 border-t border-slate-100 pt-2">
+                    <p class="text-xs text-slate-500 mb-1">
+                        Tes conversations privées :
+                    </p>
+
+                    <ul id="dm-list" class="space-y-1 max-h-40 overflow-y-auto">
+                        {% if dm_convos and dm_convos|length > 0 %}
+                            {% for conv in dm_convos %}
+                            <li class="dm-entry flex items-center justify-between text-xs cursor-pointer hover:bg-emerald-50 px-2 py-1.5 rounded-lg" data-pseudo="{{ conv.other }}">
+                                <div class="flex items-center gap-2 min-w-0">
+                                    <div class="w-6 h-6 rounded-full bg-emerald-600/10 flex items-center justify-center text-[11px] font-semibold text-emerald-700">
+                                        {{ conv.other[0]|upper }}
+                                    </div>
+                                    <div class="flex flex-col min-w-0">
+                                        <span class="font-semibold text-slate-800 truncate max-w-[120px]">
+                                            {{ conv.other }}
+                                        </span>
+                                        {% if conv.last_message %}
+                                        <span class="text-[11px] text-slate-500 truncate max-w-[140px] dm-last-message">
+                                            {{ conv.last_message }}
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="flex flex-col items-end gap-0.5">
+                                    {% if conv.last_time %}
+                                    <span class="text-[10px] text-slate-400 dm-last-time">
+                                        {{ conv.last_time.strftime("%H:%M") }}
+                                    </span>
+                                    {% endif %}
+                                    {% if conv.unread_count > 0 %}
+                                    <span class="inline-flex items-center justify-center min-w-[18px] px-1 rounded-full bg-emerald-600 text-white text-[10px] font-semibold dm-unread-badge">
+                                        {{ conv.unread_count }}
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </li>
+                            {% endfor %}
+                        {% endif %}
+                    </ul>
+
+                    <p id="dm-empty-placeholder" class="text-xs text-slate-500 {% if dm_convos and dm_convos|length > 0 %}hidden{% endif %}">
+                        Aucun MP pour l’instant.
+                    </p>
+                </div>
+
+
+
+                
+                <div class="border-t border-slate-100 pt-2 text-xs text-slate-700">
+                    <p class="font-semibold mb-1.5 flex items-center gap-2">
+                        <span class="text-emerald-600 text-lg">👥</span>
+                        Groupes
+                    </p>
+
+                    
+                    <form method="POST" action="{{ url_for('chat.create_group') }}" class="flex gap-2 mb-2">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="text" name="group_name" placeholder="Nom du groupe" class="flex-1 text-xs px-2 py-1.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                        <button type="submit" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-medium hover:bg-emerald-500 transition">
+                            Créer
+                        </button>
+                    </form>
+
+                    {% if groups and groups|length > 0 %}
+                        <ul id="group-list" class="space-y-2 max-h-56 overflow-y-auto">
+                            {% for g in groups %}
+                            <li class="group-entry border border-slate-100 rounded-lg px-2 py-1.5 cursor-pointer hover:bg-emerald-50" data-group-id="{{ g.id }}" data-group-name="{{ g.name }}">
+                                <div class="flex items-center justify-between gap-2">
+                                    <div class="flex items-center gap-2 min-w-0">
+                                        <div class="w-6 h-6 rounded-full bg-emerald-600/10 flex items-center justify-center text-[11px] font-semibold text-emerald-700">
+                                            {{ g.name[0]|upper }}
+                                        </div>
+                                        <div class="flex flex-col min-w-0">
+                                            <span class="font-semibold text-slate-800 truncate max-w-[120px]">
+                                                {{ g.name }}
+                                            </span>
+                                            {% if g.last_message %}
+                                            <span class="text-[11px] text-slate-500 truncate max-w-[140px] group-last-message">
+                                                {{ g.last_message }}
+                                            </span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col items-end gap-0.5">
+                                        {% if g.last_time %}
+                                        <span class="text-[10px] text-slate-400 group-last-time">
+                                            {{ g.last_time.strftime("%H:%M") }}
+                                        </span>
+                                        {% endif %}
+                                        {% if g.unread_count > 0 %}
+                                        <span class="inline-flex items-center justify-center min-w-[18px] px-1 rounded-full bg-emerald-600 text-white text-[10px] font-semibold group-unread-badge">
+                                            {{ g.unread_count }}
+                                        </span>
+                                        {% endif %}
+                                        {% if g.is_owner %}
+                                        <span class="text-[10px] text-emerald-600 font-semibold">
+                                            Owner
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                {% if g.can_manage %}
+                                <details class="mt-1 text-[11px] text-slate-600">
+                                    <summary class="cursor-pointer select-none text-slate-700 font-medium">
+                                        Gérer le groupe
+                                    </summary>
+                                    <div class="mt-1 space-y-1.5">
+
+                                        
+                                        <form method="POST" action="{{ url_for('chat.toggle_group_invites', group_id=g.id) }}" class="flex items-center justify-between gap-2">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <span>
+                                                Autoriser les membres à inviter :
+                                            </span>
+                                            <button type="submit" class="px-2 py-0.5 rounded-full border text-[11px]
+                                                    {% if g.allow_member_invites %}
+                                                        border-emerald-600 text-emerald-700 bg-emerald-50
+                                                    {% else %}
+                                                        border-slate-300 text-slate-500 bg-white
+                                                    {% endif %}">
+                                                {% if g.allow_member_invites %}Oui{% else %}Non{% endif %}
+                                            </button>
+                                        </form>
+
+                                        
+                                        <form method="POST" action="{{ url_for('chat.rename_group', group_id=g.id) }}" class="flex gap-1.5">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <input type="text" name="new_name" placeholder="Nouveau nom…" value="{{ g.name }}" class="flex-1 px-2 py-1 rounded-lg border border-slate-300 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 text-[11px]">
+                                            <button type="submit" class="px-2 py-1 rounded-lg bg-slate-800 text-white text-[11px] font-medium hover:bg-slate-700 transition">
+                                                Renommer
+                                            </button>
+                                        </form>
+
+                                        
+                                        <form method="POST" action="{{ url_for('chat.add_group_member', group_id=g.id) }}" class="flex gap-1.5">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <input type="text" name="identifier" placeholder="Pseudo ou email…" class="flex-1 px-2 py-1 rounded-lg border border-slate-300 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500">
+                                            <button type="submit" class="px-2 py-1 rounded-lg bg-emerald-600 text-white text-[11px] font-medium hover:bg-emerald-500 transition">
+                                                Ajouter
+                                            </button>
+                                        </form>
+
+                                        
+                                        <div class="border-t border-slate-100 pt-1">
+                                            <p class="font-semibold mb-0.5">Membres :</p>
+                                            <ul class="space-y-0.5">
+                                                {% for m in g.members %}
+                                                <li class="flex items-center justify-between">
+                                                    <span>
+                                                        {{ m }}
+                                                        {% if m == g.owner %}
+                                                        <span class="text-[10px] text-emerald-600">(owner)</span>
+                                                        {% endif %}
+                                                    </span>
+                                                    {% if m != g.owner %}
+                                                    <form method="POST" action="{{ url_for('chat.kick_group_member', group_id=g.id) }}">
+                                                        <input type="hidden" name="member" value="{{ m }}">
+                                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                        <button type="submit" class="text-[10px] text-red-500 hover:underline">
+                                                            Retirer
+                                                        </button>
+                                                    </form>
+                                                    {% endif %}
+                                                </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+
+                                        
+                                        <form method="POST" action="{{ url_for('chat.delete_group', group_id=g.id) }}" onsubmit="return confirm('Supprimer le groupe {{ g.name }} ? Cette action est définitive.');">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <button type="submit" class="mt-1 w-full px-2 py-1 rounded-lg bg-red-600 text-white text-[11px] font-semibold hover:bg-red-500 transition">
+                                                Supprimer le groupe
+                                            </button>
+                                        </form>
+
+                                    </div>
+                                </details>
+                                {% endif %}
+
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-xs text-slate-500">
+                            Tu ne fais partie d’aucun groupe pour l’instant.
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+
+            
+            <div class="bg-emerald-50 border border-emerald-100 rounded-2xl shadow-sm p-4 text-sm">
+                <h2 class="font-semibold text-slate-900 mb-1.5 flex items-center gap-2">
+                    <span class="text-emerald-600 text-lg">💡</span>
+                    Règles rapides
+                </h2>
+                <ul class="list-disc list-inside space-y-1 text-slate-700 text-sm">
+                    <li>Pas de spam : 500 messages max par heure et par personne.</li>
+                    <li>Pas de harcèlement, propos haineux ou NSFW.</li>
+                    <li>Les messages disparaissent automatiquement au bout d’une heure.</li>
+                </ul>
+            </div>
+
+        </aside>
+
+        
+        <div class="space-y-3">
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 text-sm">
+                <h2 class="font-semibold text-slate-900 mb-1.5 flex items-center gap-2">
+                    <span class="text-emerald-600 text-lg">📢</span>
+                    Annonces globales
+                </h2>
+
+                {% if is_admin %}
+                <form method="POST" action="{{ url_for('chat.create_announcement') }}" class="flex flex-col gap-1.5 mb-3">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="text" name="title" maxlength="100" placeholder="Titre de l’annonce…" class="w-full text-xs px-2 py-1.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    <textarea name="description" rows="3" maxlength="1000" placeholder="Description…" class="w-full text-xs px-2 py-1.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
+                    <button type="submit" class="self-end px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-[11px] font-medium hover:bg-emerald-500">
+                        Publier
+                    </button>
+                </form>
+                {% endif %}
+
+                
+                <div id="announcements-container">
+                    {% if announcements and announcements|length > 0 %}
+                        <ul class="space-y-1.5 max-h-56 overflow-y-auto">
+                            {% for a in announcements %}
+                            <li class="border border-slate-100 rounded-lg px-2 py-1.5 flex items-start justify-between gap-2">
+                                <div class="flex-1 min-w-0">
+                                    <div class="text-[11px] text-slate-500 flex items-center gap-1">
+                                        <span class="font-semibold text-slate-800">{{ a.title }}</span>
+                                        <span>·</span>
+                                        <span>par {{ a.author }}</span>
+                                        {% if a.created_at %}
+                                        <span>· {{ a.created_at.strftime("%d/%m %H:%M") }}</span>
+                                        {% endif %}
+                                    </div>
+                                    {% if a.description %}
+                                    <p class="text-[12px] text-slate-800 break-words">
+                                        {{ a.description }}
+                                    </p>
+                                    {% endif %}
+                                </div>
+
+                                {% if is_admin %}
+                                    {% if a.author == 'tatoudm' %}
+                                        {% if nom == 'tatoudm' %}
+                                        <form method="POST" action="{{ url_for('chat.delete_announcement', ann_id=a.id) }}">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <button class="text-[10px] text-red-500 hover:underline">Supprimer</button>
+                                        </form>
+                                        {% endif %}
+                                    {% else %}
+                                    <form method="POST" action="{{ url_for('chat.delete_announcement', ann_id=a.id) }}">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button class="text-[10px] text-red-500 hover:underline">Supprimer</button>
+                                    </form>
+                                    {% endif %}
+                                {% endif %}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-xs text-slate-500">
+                            Aucune annonce pour l’instant.
+                        </p>
+                    {% endif %}
+                </div>
+                
+
+            </div>
+        </div>
+
+
+    </section>
+
+</div>
+    <div id="mini-game-modal" class="hidden fixed inset-0 z-50 bg-black/40 flex items-center justify-center">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-4 space-y-3">
+            <div class="flex items-start justify-between gap-2">
+                <div>
+                    <h2 id="mini-game-title" class="text-base font-semibold text-slate-900">
+                        Mini-jeu
+                    </h2>
+                    <p id="mini-game-subtitle" class="text-xs text-slate-500">
+                        Invitation ou partie en cours
+                    </p>
+                </div>
+                <button type="button" class="w-7 h-7 rounded-full flex items-center justify-center text-slate-500 hover:bg-slate-100" onclick="closeMiniGameModal()">
+                    ✕
+                </button>
+            </div>
+
+            <div id="mini-game-body" class="text-sm text-slate-800 space-y-2">
+            </div>
+
+            <div id="mini-game-actions" class="flex flex-col gap-2">
+            </div>
+        </div>
+    </div>
+
+
+<script>
+    
+    
+    
+    const msgBox = document.getElementById("messages");
+    const form = document.querySelector("form[method='POST']");
+    const input = document.getElementById("message-input");
+    const wsStatusDot = document.getElementById("ws-status-dot");
+    const wsStatusText = document.getElementById("ws-status-text");
+    const channelTitleEl = document.getElementById("channel-title");
+    const headerScopeLabel = document.getElementById("header-scope-label");
+    const headerTitle = document.getElementById("header-title");
+    const headerSubtitle = document.getElementById("header-subtitle");
+
+    const mpForm = document.getElementById("mp-form");
+    const mpPseudoInput = document.getElementById("mp-pseudo");
+    const dmList = document.getElementById("dm-list");
+    const groupList = document.getElementById("group-list");
+    const btnBackGeneral = document.getElementById("btn-back-general");
+    const dmEmptyPlaceholder = document.getElementById("dm-empty-placeholder");
+    const announcementsContainer = document.getElementById("announcements-container");
+
+    const isAdmin = {{ 'true' if is_admin else 'false' }};
+    const currentUser = {{ nom|tojson|safe }};
+    const userPlan = {{ (user_plan or "free")|tojson|safe }};
+    const isPlus = (userPlan === "plus");
+    const messageLimit = {{ message_limit or 500 }};
+    let announcementsData = {{ announcements|tojson|safe }};
+    const csrfToken = "{{ csrf_token() }}";
+    const initialChannel = {{ (initial_channel or "general")|tojson|safe }};
+    const initialDmWith = {{ (initial_dm_with or "")|tojson|safe }};
+
+
+    const miniGameModal = document.getElementById("mini-game-modal");
+    const miniGameTitle = document.getElementById("mini-game-title");
+    const miniGameSubtitle = document.getElementById("mini-game-subtitle");
+    const miniGameBody = document.getElementById("mini-game-body");
+    const miniGameActions = document.getElementById("mini-game-actions");
+
+    
+    let ws = null;
+    let wsGeneration = 0;         
+    let currentChannelType = "general";   
+    let currentTarget = null;             
+    let currentGroupId = null;            
+    let messagesList = [];
+
+    let reactionPicker = null;
+    let reactionPickerMessageId = null;
+
+    let retryCount = 0;
+    const maxRetries = 3;
+    let maintenanceActive = false;
+
+    let allowReconnect = true;    
+    let manualClose = false;      
+
+    
+    let reportConfirmState = {};
+
+    let emojiList = null;
+    let emojiLoadPromise = null;
+
+    function loadEmojiList() {
+        if (emojiList) {
+            
+            return Promise.resolve(emojiList);
+        }
+        if (emojiLoadPromise) {
+            
+            return emojiLoadPromise;
+        }
+
+        emojiLoadPromise = fetch("/static/emojis.json", {
+            cache: "force-cache"
+        })
+            .then((res) => {
+                if (!res.ok) {
+                    throw new Error("Erreur HTTP " + res.status);
+                }
+                return res.json();
+            })
+            .then((data) => {
+                if (!Array.isArray(data)) {
+                    throw new Error("emojis.json doit contenir un tableau");
+                }
+                emojiList = data.filter(e => typeof e === "string" && e.trim() !== "");
+                return emojiList;
+            })
+            .catch((err) => {
+                console.error("Impossible de charger emojis.json :", err);
+                emojiList = [];
+                return emojiList;
+            });
+
+        return emojiLoadPromise;
+    }
+
+
+    
+    
+    
+    const commandClients = {};       
+    const loadedCommandScripts = new Set();
+
+    window.registerCommandClient = function (name, client) {
+        if (!name) return;
+        commandClients[name] = client || {};
+        loadedCommandScripts.add(name);
+    };
+
+    function loadCommandScript(name) {
+        if (!name || loadedCommandScripts.has(name)) return;
+        const script = document.createElement("script");
+        script.src = `/static/commands/${encodeURIComponent(name)}.js`;
+        script.async = true;
+        script.onload = () => {
+            console.log("[CMD] Plugin JS chargé :", name);
+        };
+        script.onerror = () => {
+            console.warn("[CMD] Échec chargement plugin JS:", name);
+        };
+        document.head.appendChild(script);
+        loadedCommandScripts.add(name);
+    }
+
+    function loadAllCommandScripts(list) {
+        if (!Array.isArray(list)) return;
+        list.forEach(cmd => loadCommandScript(cmd));
+    }
+
+    
+    const commandCtx = {
+        getCurrentUser() {
+            return currentUser;
+        },
+        getChannel() {
+            return {
+                type: currentChannelType,
+                target: currentTarget,
+                groupId: currentGroupId,
+            };
+        },
+        sendEvent(commandName, eventName, payload) {
+            if (!ws || ws.readyState !== WebSocket.OPEN) return;
+            ws.send(JSON.stringify({
+                type: "command_event",
+                command: commandName,
+                event: eventName,
+                payload: payload || {},
+            }));
+        },
+        openModal(title, subtitle) {
+            if (!miniGameModal) return;
+            miniGameTitle.textContent = title || "Mini-jeu";
+            miniGameSubtitle.textContent = subtitle || "";
+            miniGameBody.innerHTML = "";
+            miniGameActions.innerHTML = "";
+            miniGameModal.classList.remove("hidden");
+        },
+        closeModal() {
+            if (!miniGameModal) return;
+            miniGameModal.classList.add("hidden");
+        },
+        setModalContent(html) {
+            if (!miniGameBody) return;
+            miniGameBody.innerHTML = html || "";
+        },
+        setModalActions(html) {
+            if (!miniGameActions) return;
+            miniGameActions.innerHTML = html || "";
+        },
+        toast(message, type) {
+            if (typeof showToast === "function") {
+                showToast(message, type || "info");
+            } else {
+                console.log("[toast]", type, message);
+            }
+        }
+    };
+
+    function closeMiniGameModal() {
+        commandCtx.closeModal();
+    }
+
+    function handleCommandMessage(data) {
+        const cmd = data.command;
+        if (!cmd) return false;
+
+        if (!commandClients[cmd]) {
+            
+            loadCommandScript(cmd);
+            return false;
+        }
+
+        const client = commandClients[cmd];
+        if (client && typeof client.onServerMessage === "function") {
+            client.onServerMessage(data, commandCtx);
+            return true;
+        }
+        return false;
+    }
+
+    
+    
+    
+    const reportForm = document.createElement("form");
+    reportForm.method = "POST";
+    reportForm.action = "{{ url_for('chat.report_message') }}";
+    reportForm.style.display = "none";
+
+    const reportCsrfInput = document.createElement("input");
+    reportCsrfInput.type = "hidden";
+    reportCsrfInput.name = "csrf_token";
+    reportCsrfInput.value = csrfToken;
+    reportForm.appendChild(reportCsrfInput);
+
+    const reportMsgIdInput = document.createElement("input");
+    reportMsgIdInput.type = "hidden";
+    reportMsgIdInput.name = "message_id";
+    reportForm.appendChild(reportMsgIdInput);
+
+    document.body.appendChild(reportForm);
+
+    
+    
+    
+    function setWsStatus(state) {
+        if (!wsStatusDot || !wsStatusText) return;
+
+        if (state === "connected") {
+            wsStatusDot.className = "inline-block w-2.5 h-2.5 rounded-full bg-emerald-500";
+            wsStatusText.textContent = "Connecté";
+            wsStatusText.className = "text-[11px] text-emerald-600";
+        } else if (state === "connecting") {
+            wsStatusDot.className = "inline-block w-2.5 h-2.5 rounded-full bg-slate-300 animate-pulse";
+            wsStatusText.textContent = "Connexion…";
+            wsStatusText.className = "text-[11px] text-slate-500";
+        } else if (state === "maintenance") {
+            wsStatusDot.className = "inline-block w-2.5 h-2.5 rounded-full bg-amber-500";
+            wsStatusText.textContent = "Maintenance";
+            wsStatusText.className = "text-[11px] text-amber-700";
+        } else if (state === "error") {
+            setWsErrorStatus();
+        } else { 
+            wsStatusDot.className = "inline-block w-2.5 h-2.5 rounded-full bg-red-500";
+            wsStatusText.textContent = "Déconnecté";
+            wsStatusText.className = "text-[11px] text-red-600";
+        }
+    }
+
+    function setWsErrorStatus() {
+        if (!wsStatusDot || !wsStatusText) return;
+        wsStatusDot.className = "inline-block w-2.5 h-2.5 rounded-full bg-red-600";
+        wsStatusText.textContent = "Erreur";
+        wsStatusText.className = "text-[11px] text-red-700";
+
+        disableChatUI(
+            "Impossible de se connecter au chat. Réessaie plus tard ou recharge la page."
+        );
+    }
+
+    function disableChatUI(message) {
+        if (input) {
+            input.disabled = true;
+            input.placeholder = message || "Le site est en maintenance.";
+        }
+        if (form) {
+            const btn = form.querySelector("button[type='submit']");
+            if (btn) {
+                btn.disabled = true;
+                btn.classList.add("opacity-60", "cursor-not-allowed");
+            }
+        }
+    }
+
+    
+    
+    
+    function tryReconnect(reason = "close") {
+        if (maintenanceActive) {
+            console.warn("WS: maintenance active, arrêt des tentatives de reconnexion.");
+            setWsStatus("maintenance");
+            return;
+        }
+
+        if (!allowReconnect) {
+            console.warn("WS: reconnexion désactivée (erreur fatale).");
+            setWsStatus("error");
+            return;
+        }
+
+        if (retryCount >= maxRetries) {
+            console.warn("WS: Échec après 3 tentatives.");
+            setWsStatus("error");
+            if (typeof showToast === "function") {
+                showToast("Impossible de se reconnecter au chat.", "error");
+            }
+            return;
+        }
+
+        retryCount++;
+        console.log(`Tentative de reconnexion (${retryCount}/${maxRetries}) [cause=${reason}]…`);
+
+        setTimeout(() => {
+            connectWs();
+        }, 1000);
+    }
+
+    
+    
+    
+    function renderAnnouncementsClient(list) {
+        if (!announcementsContainer) return;
+
+        if (!list || list.length === 0) {
+            announcementsContainer.innerHTML = `
+                <p class="text-xs text-slate-500">
+                    Aucune annonce pour l’instant.
+                </p>
+            `;
+            return;
+        }
+
+        let html = "";
+        list.forEach(a => {
+            const title = a.title || "Annonce";
+            const author = a.author || "Système";
+            const description = a.description || "";
+            const deleteUrl = `/announcements/${a.id}/delete`;
+
+            html += `
+                <article class="border border-slate-100 rounded-lg px-2 py-1.5 flex items-start justify-between gap-2">
+                    <div class="flex-1 min-w-0">
+                        <div class="text-[11px] text-slate-500 flex items-center gap-1">
+                            <span class="font-semibold text-slate-800 truncate">${title}</span>
+                            <span>·</span>
+                            <span>par ${author}</span>
+                        </div>
+                        ${description ? `
+                        <p class="text-[12px] text-slate-800 break-words whitespace-pre-line">
+                            ${description}
+                        </p>` : ``}
+                    </div>
+                    ${isAdmin ? (() => {
+                        if (author === "tatoudm" && currentUser !== "tatoudm") {
+                            return "";
+                        }
+                        return `
+                            <form method="POST" action="${deleteUrl}">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button class="text-[10px] text-red-500 hover:underline">Supprimer</button>
+                            </form>
+                        `;
+                    })() : ""}
+                </article>
+            `;
+        });
+
+        announcementsContainer.innerHTML = html;
+    }
+
+    async function refreshAnnouncements() {
+        try {
+            const res = await fetch("{{ url_for('chat.announcements_json') }}", {
+                headers: { "X-Requested-With": "XMLHttpRequest" }
+            });
+            if (!res.ok) return;
+
+            const data = await res.json();
+            if (!data.announcements) return;
+
+            announcementsData = data.announcements;
+            renderAnnouncementsClient(announcementsData);
+        } catch (e) {
+            console.error("Erreur refresh annonces :", e);
+        }
+    }
+
+    renderAnnouncementsClient(announcementsData);
+    setInterval(refreshAnnouncements, 5 * 60 * 1000);
+
+    
+    
+    
+    function updateChannelHeader() {
+        if (!channelTitleEl || !headerScopeLabel || !headerTitle || !headerSubtitle) return;
+
+        if (currentChannelType === "general") {
+            channelTitleEl.textContent = "Salon public";
+            headerScopeLabel.textContent = "Salon public · #general";
+            headerTitle.textContent = "Chat anonyme en direct";
+            headerSubtitle.innerHTML = `
+                Connecté en tant que <span class="font-semibold text-slate-900">{{ nom }}</span>.
+                Tout le monde voit tous les messages. Limite&nbsp;: 1000 messages par heure.
+            `;
+        } else if (currentChannelType === "dm") {
+            channelTitleEl.textContent = "MP avec " + currentTarget;
+            headerScopeLabel.textContent = "Salon privé · MP avec " + currentTarget;
+            headerTitle.textContent = "Conversation privée";
+            headerSubtitle.innerHTML = `
+                Tu es en MP avec <span class="font-semibold text-slate-900">${currentTarget}</span>.
+                Seuls vous deux voyez ces messages. Limite&nbsp;: 1000 messages par heure.
+            `;
+        } else if (currentChannelType === "group") {
+            channelTitleEl.textContent = "Groupe · " + currentTarget;
+            headerScopeLabel.textContent = "Groupe · " + currentTarget;
+            headerTitle.textContent = "Discussion de groupe";
+            headerSubtitle.innerHTML = `
+                Tu es dans le groupe <span class="font-semibold text-slate-900">${currentTarget}</span>.
+                Les membres du groupe voient ces messages.
+            `;
+        }
+    }
+
+    function updateInputPermissions() {
+        if (currentChannelType === "dm") {
+            const lower = (currentTarget || "").toLowerCase();
+
+            if (lower === "serveur") {
+                input.disabled = true;
+                input.placeholder = "Vous n'avez pas la permission de parler ici.";
+                const btn = form.querySelector("button[type='submit']");
+                if (btn) btn.disabled = true;
+
+                return; 
+            }
+        }
+
+        input.disabled = false;
+        input.placeholder = "Écris ton message…";
+        const btn = form.querySelector("button[type='submit']");
+        if (btn) btn.disabled = false;
+    }
+
+    function sendToggleReaction(messageId, emojiInput) {
+        let emoji = normalizeEmoji(emojiInput);
+        if (!emoji) return;
+        if (!ws || ws.readyState !== WebSocket.OPEN) return;
+
+        ws.send(JSON.stringify({
+            type: "toggle_reaction",
+            message_id: messageId,
+            emoji: emoji,
+        }));
+    }
+
+
+    function closeReactionPicker() {
+        if (reactionPicker) {
+            reactionPicker.remove();
+            reactionPicker = null;
+            reactionPickerMessageId = null;
+        }
+    }
+
+        
+    let plusPopup = null;
+
+    function closePlusPopup() {
+        if (plusPopup) {
+            plusPopup.remove();
+            plusPopup = null;
+        }
+    }
+
+    function openPlusPopup() {
+        if (plusPopup) {
+            return;
+        }
+
+        const overlay = document.createElement("div");
+        overlay.className =
+            "fixed inset-0 z-50 flex items-center justify-center bg-black/40";
+
+        const box = document.createElement("div");
+        box.className =
+            "bg-white rounded-2xl shadow-xl px-4 py-3 max-w-xs w-[260px] text-sm text-slate-800";
+
+        const title = document.createElement("div");
+        title.className = "font-semibold mb-1";
+        title.textContent = "Fonctionnalité réservée à Plus";
+
+        const msg = document.createElement("p");
+        msg.className = "text-xs text-slate-600 mb-3";
+        msg.textContent = "Seul les utilisateurs Plus peuvent réagir aux messages !";
+
+        const actions = document.createElement("div");
+        actions.className = "flex justify-end gap-2";
+
+        const closeBtn = document.createElement("button");
+        closeBtn.type = "button";
+        closeBtn.className =
+            "px-2 py-1 rounded-lg border border-slate-200 text-xs text-slate-600 hover:bg-slate-50";
+        closeBtn.textContent = "Fermer";
+        closeBtn.addEventListener("click", (ev) => {
+            ev.stopPropagation();
+            closePlusPopup();
+        });
+
+        const plusLink = document.createElement("a");
+        plusLink.href = "/plus";
+        plusLink.className =
+            "px-3 py-1 rounded-lg bg-emerald-600 text-xs text-white hover:bg-emerald-700";
+        plusLink.textContent = "S’abonner";
+
+        actions.appendChild(closeBtn);
+        actions.appendChild(plusLink);
+
+        box.appendChild(title);
+        box.appendChild(msg);
+        box.appendChild(actions);
+
+        overlay.appendChild(box);
+
+        overlay.addEventListener("click", (ev) => {
+            if (ev.target === overlay) {
+                closePlusPopup();
+            }
+        });
+
+        document.body.appendChild(overlay);
+        plusPopup = overlay;
+    }
+
+
+    function openReactionPicker(messageId, anchorEl, clickEvent) {
+        if (!isPlus) {
+            return;
+        }
+        if (!anchorEl) return;
+
+        closeReactionPicker();
+
+        reactionPickerMessageId = messageId;
+
+        const picker = document.createElement("div");
+        picker.className =
+            "fixed z-50 bg-white border border-slate-200 shadow-lg rounded-xl p-2 text-xs max-w-xs";
+
+        let x, y;
+        const rect = anchorEl.getBoundingClientRect();
+
+        x = rect.left + window.scrollX;
+        y = rect.bottom + window.scrollY + 4; 
+
+
+        picker.style.left = x + "px";
+        picker.style.top = y + "px";
+
+        
+        const title = document.createElement("div");
+        title.className = "font-semibold text-slate-700 mb-1";
+        title.textContent = "Réagir avec un emoji";
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.maxLength = 16;
+        input.placeholder = "Tape ou colle un emoji…";
+        input.className =
+            "w-full border border-slate-200 rounded-lg px-2 py-1 text-sm mb-2 focus:outline-none focus:ring-2 focus:ring-emerald-400";
+
+        const quickContainer = document.createElement("div");
+        quickContainer.className =
+            "max-h-40 overflow-y-auto grid grid-cols-8 gap-1 text-lg mb-2";
+
+        const loading = document.createElement("div");
+        loading.className = "col-span-8 text-center text-slate-400 text-xs py-2";
+        loading.textContent = "Chargement des emojis…";
+        quickContainer.appendChild(loading);
+
+        loadEmojiList().then((quickEmojis) => {
+            if (picker !== reactionPicker) {
+                return;
+            }
+
+            quickContainer.innerHTML = "";
+
+            if (!quickEmojis || quickEmojis.length === 0) {
+                const empty = document.createElement("div");
+                empty.className = "col-span-8 text-center text-slate-400 text-xs py-2";
+                empty.textContent = "Aucun emoji disponible.";
+                quickContainer.appendChild(empty);
+                return;
+            }
+
+            quickEmojis.forEach(e => {
+                if (!e) return;
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.className =
+                    "w-6 h-6 flex items-center justify-center rounded hover:bg-slate-100";
+                btn.textContent = e;
+                btn.addEventListener("click", (ev) => {
+                    ev.stopPropagation();
+                    sendToggleReaction(messageId, e);
+                    closeReactionPicker();
+                });
+                quickContainer.appendChild(btn);
+            });
+        }).catch((err) => {
+            console.error(err);
+            quickContainer.innerHTML = "";
+            const error = document.createElement("div");
+            error.className = "col-span-8 text-center text-red-400 text-xs py-2";
+            error.textContent = "Erreur lors du chargement des emojis.";
+            quickContainer.appendChild(error);
+        });
+
+        const actions = document.createElement("div");
+        actions.className = "flex justify-end gap-2";
+
+        const cancelBtn = document.createElement("button");
+        cancelBtn.type = "button";
+        cancelBtn.className =
+            "px-2 py-1 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50";
+        cancelBtn.textContent = "Annuler";
+        cancelBtn.addEventListener("click", (ev) => {
+            ev.stopPropagation();
+            closeReactionPicker();
+        });
+
+        const okBtn = document.createElement("button");
+        okBtn.type = "button";
+        okBtn.className =
+            "px-2 py-1 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700";
+        okBtn.textContent = "Ajouter";
+        okBtn.addEventListener("click", (ev) => {
+            ev.stopPropagation();
+            if (input.value && input.value.trim() !== "") {
+                sendToggleReaction(messageId, input.value.trim());
+            }
+            closeReactionPicker();
+        });
+
+        actions.appendChild(cancelBtn);
+        actions.appendChild(okBtn);
+
+        picker.appendChild(title);
+        picker.appendChild(input);
+        picker.appendChild(quickContainer);
+        picker.appendChild(actions);
+
+        document.body.appendChild(picker);
+        reactionPicker = picker;
+
+        let clickX, clickY;
+
+        if (clickEvent) {
+            clickX = clickEvent.clientX;
+            clickY = clickEvent.clientY;
+        } else if (anchorEl) {
+            const rect = anchorEl.getBoundingClientRect();
+            clickX = rect.left;
+            clickY = rect.bottom;
+        } else {
+            clickX = 0;
+            clickY = 0;
+        }
+
+        const popupHeight = picker.offsetHeight;
+
+        picker.style.left = clickX + "px";
+        picker.style.top = (clickY - popupHeight) + "px";
+
+        input.focus();
+
+    }
+
+
+    document.addEventListener("click", (ev) => {
+        if (reactionPicker && !reactionPicker.contains(ev.target)) {
+            closeReactionPicker();
+        }
+    });
+
+    function normalizeEmoji(input) {
+        if (!input) return "";
+        let s = String(input).trim();
+        if (!s) return "";
+        const arr = Array.from(s);
+        return arr.length > 0 ? arr[0] : "";
+    }
+
+
+    
+    
+    
+
+    function renderMessages(list) {
+        if (!msgBox) return;
+        msgBox.innerHTML = "";
+
+        (list || []).forEach(m => {
+            const wrapper = document.createElement("div");
+            wrapper.className = "flex items-start gap-2 py-1"; 
+
+            const avatar = document.createElement("div");
+            avatar.className = "flex-shrink-0";
+
+            if (m.author_pdp) {
+                const img = document.createElement("img");
+                img.src = `/static/pdp/${encodeURIComponent(m.author_pdp)}`;
+                img.alt = m.author || "";
+                img.className = "w-8 h-8 rounded-full object-cover border border-slate-300";
+                avatar.appendChild(img);
+            } else {
+                const fallback = document.createElement("div");
+                fallback.className =
+                    "w-8 h-8 rounded-full bg-emerald-600/10 flex items-center justify-center text-xs font-semibold text-emerald-700";
+                fallback.textContent = (m.author && m.author[0] ? m.author[0].toUpperCase() : "?");
+                avatar.appendChild(fallback);
+            }
+
+
+            const main = document.createElement("div");
+            main.className = "flex-1";
+
+            const header = document.createElement("div");
+            header.className = "flex items-center justify-between text-[11px] text-slate-500 leading-none";
+
+            const left = document.createElement("div");
+            left.className = "flex items-center gap-1";
+
+            const authorSpan = document.createElement("span");
+            authorSpan.className = "font-semibold text-slate-800";
+            authorSpan.textContent = m.author || "";
+
+            const dot = document.createElement("span");
+            dot.textContent = "·";
+
+            const timeSpan = document.createElement("span");
+            timeSpan.textContent = m.time || "";
+
+            left.appendChild(authorSpan);
+
+            const author_is_plus = !!m.author_is_plus;
+
+            if (author_is_plus) {
+                const plusBadge = document.createElement("span");
+                plusBadge.className =
+                    "inline-flex items-center px-1.5 py-[1px] rounded-full text-[10px] " +
+                    "font-semibold bg-emerald-100 text-emerald-700 border border-emerald-200";
+                plusBadge.textContent = "Plus";
+                left.appendChild(plusBadge);
+            }
+
+
+            left.appendChild(dot);
+            left.appendChild(timeSpan);
+
+            const right = document.createElement("div");
+
+            
+            if (m.id) {
+                const reportBtn = document.createElement("button");
+                reportBtn.type = "button";
+                reportBtn.className =
+                    "underline-offset-2 hover:underline text-slate-400 hover:text-red-500 text-[11px]";
+                reportBtn.textContent = "Signaler";
+                reportBtn.title = "Signaler";
+
+                reportBtn.addEventListener("click", () => {
+                    reportMsgIdInput.value = m.id;
+                    reportForm.submit();
+                });
+
+                right.appendChild(reportBtn);
+            }
+
+            header.appendChild(left);
+            header.appendChild(right);
+
+            
+            const msgLine = document.createElement("div");
+            msgLine.className = "flex items-start justify-between w-full";
+
+            const p = document.createElement("p");
+            p.className = "text-slate-800 text-sm leading-snug m-0 break-words flex-1"; 
+            p.textContent = m.content || "";
+
+            msgLine.appendChild(p);
+
+            
+            const addBtn = document.createElement("button");
+            addBtn.type = "button";
+            addBtn.className =
+                "ml-2 w-5 h-5 flex items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 text-sm";
+            addBtn.textContent = "+";
+
+            if (m.id) {
+                if (isPlus) {
+                    
+                    addBtn.addEventListener("click", (ev) => {
+                        ev.stopPropagation();
+                        openReactionPicker(m.id, addBtn, ev);
+                    });
+                } else {
+                    
+                    addBtn.classList.add("opacity-60");
+                    addBtn.addEventListener("click", (ev) => {
+                        ev.stopPropagation();
+                        openPlusPopup();
+                    });
+                }
+            } else {
+                addBtn.classList.add("opacity-40");
+            }
+
+            msgLine.appendChild(addBtn);
+
+
+            main.appendChild(header);
+            main.appendChild(msgLine);
+
+            
+            const reactions = m.reactions || {};
+            const entries = Object.entries(reactions).filter(([_, users]) =>
+                Array.isArray(users) && users.length > 0
+            );
+
+            if (entries.length > 0) {
+                const bar = document.createElement("div");
+                bar.className = "mt-1 flex flex-wrap items-center gap-1 text-[11px] text-slate-600 leading-none";
+
+                entries.forEach(([emoji, users]) => {
+                    const reacted = users.includes(currentUser);
+                    const count = users.length;
+
+                    const btn = document.createElement("button");
+                    btn.type = "button";
+                    btn.className =
+                        "inline-flex items-center gap-1 px-2 py-[2px] rounded-full border " +
+                        (reacted
+                            ? "bg-emerald-50 border-emerald-300 text-emerald-700"
+                            : "bg-slate-100 border-slate-200 text-slate-500");
+
+                    btn.innerHTML = `${emoji} <span class="text-[10px]">${count}</span>`;
+
+                    if (isPlus) {
+                        btn.addEventListener("click", () => sendToggleReaction(m.id, emoji));
+                    }
+
+                    bar.appendChild(btn);
+                });
+
+                main.appendChild(bar);
+            }
+
+            wrapper.appendChild(avatar);
+            wrapper.appendChild(main);
+
+            msgBox.appendChild(wrapper);
+        });
+
+        msgBox.scrollTop = msgBox.scrollHeight;
+    }
+
+
+
+
+    
+    
+    
+    function safeCssSelector(value) {
+        if (window.CSS && CSS.escape) {
+            return CSS.escape(value);
+        }
+        return String(value).replace(/"/g, '\\"');
+    }
+
+    // -------------------------
+    //  Maintenance polling
+    // -------------------------
+    async function pollMaintenance() {
+        if (maintenanceActive) return;
+        try {
+            const res = await fetch(window.location.pathname, {
+                method: "GET",
+                headers: { "X-Requested-With": "XMLHttpRequest" }
+            });
+
+            if (res.status === 503 && !maintenanceActive) {
+                console.warn("Maintenance détectée via HTTP 503.");
+                maintenanceActive = true;
+                setWsStatus("maintenance");
+                disableChatUI("Le site est en maintenance.");
+                if (ws && ws.readyState === WebSocket.OPEN) {
+                    try { ws.close(); } catch (e) {}
+                }
+            }
+        } catch (e) { }
+    }
+
+    // -------------------------
+    //  WebSocket helpers
+    // -------------------------
+    function disconnectWs() {
+        if (ws) {
+            manualClose = true; // fermeture volontaire
+            const oldWs = ws;
+            ws = null;
+            try { oldWs.close(); } catch (e) {}
+        }
+    }
+
+    // -------------------------
+    //  WebSocket principal
+    // -------------------------
+    function connectWs() {
+        // On incrémente la génération pour identifier cette connexion
+        wsGeneration += 1;
+        const thisGeneration = wsGeneration;
+
+        // Ferme proprement l'ancienne connexion si besoin
+        disconnectWs();
+
+        if (maintenanceActive) {
+            setWsStatus("maintenance");
+            disableChatUI();
+            return;
+        }
+
+        allowReconnect = true;
+        
+        
+        
+
+        setWsStatus("connecting");
+        messagesList = [];
+        renderMessages([]);
+
+        const wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
+        let wsUrl = `${wsProtocol}://${window.location.host}/ws/chat?channel=${currentChannelType}`;
+        if (currentChannelType === "dm" && currentTarget) {
+            wsUrl += `&with=${encodeURIComponent(currentTarget)}`;
+        }
+        if (currentChannelType === "group" && currentGroupId) {
+            wsUrl += `&group_id=${encodeURIComponent(currentGroupId)}`;
+        }
+
+        console.log("[WS] Ouverture vers", wsUrl, "(generation", thisGeneration, ")");
+
+        const newWs = new WebSocket(wsUrl);
+        ws = newWs; 
+
+        newWs.addEventListener("open", () => {
+            
+            if (ws !== newWs || wsGeneration !== thisGeneration) {
+                console.log("[WS] open d'une ancienne génération, ignoré.");
+                return;
+            }
+            console.log("[WS] connecté:", wsUrl, "(generation", thisGeneration, ")");
+            setWsStatus("connected");
+            retryCount = 0;
+            manualClose = false; 
+        });
+
+        newWs.addEventListener("message", (event) => {
+            
+            if (ws !== newWs || wsGeneration !== thisGeneration) {
+                
+                return;
+            }
+
+            let data;
+            try {
+                data = JSON.parse(event.data);
+            } catch (e) {
+                console.warn("WS: JSON invalide reçu:", event.data);
+                return;
+            }
+
+            
+            if (data.type === "fatal_error") {
+                console.error("Erreur fatale WS:", data.message);
+                allowReconnect = false;
+                setWsStatus("error");
+                disableChatUI(data.message || "Erreur critique sur le chat.");
+                if (typeof showToast === "function") {
+                    showToast(data.message || "Erreur critique sur le chat.", "error");
+                }
+                try { newWs.close(); } catch (e) {}
+                return;
+            }
+
+            
+            if (data.type === "maintenance") {
+                maintenanceActive = true;
+                setWsStatus("maintenance");
+                disableChatUI(data.message || "Le site est en maintenance.");
+                try { newWs.close(); } catch (e) {}
+                return;
+            }
+
+            
+            if (data.type === "init") {
+                const raw = data.messages || [];
+
+                
+                const seen = new Set();
+                const dedup = [];
+                for (const m of raw) {
+                    if (!m || !m.id) continue;
+                    if (seen.has(m.id)) continue;
+                    seen.add(m.id);
+                    dedup.push(m);
+                }
+
+                messagesList = dedup;
+                renderMessages(messagesList);
+
+                if (Array.isArray(data.commands)) {
+                    loadAllCommandScripts(data.commands);
+                }
+                return;
+            }
+
+
+            
+            if (data.type === "message") {
+                if (!messagesList) messagesList = [];
+
+                const msg = data.message;
+                if (!msg || !msg.id) return;
+
+                
+                const existingIndex = messagesList.findIndex(m => m.id === msg.id);
+                if (existingIndex !== -1) {
+                    messagesList[existingIndex] = msg;
+                } else {
+                    messagesList.push(msg);
+                }
+
+                renderMessages(messagesList);
+
+                
+                if (currentChannelType === "dm" && currentTarget && dmList) {
+                    const selector = `.dm-entry[data-pseudo="${safeCssSelector(currentTarget)}"]`;
+                    const entry = dmList.querySelector(selector);
+                    if (entry) {
+                        const lastMsgSpan = entry.querySelector(".dm-last-message");
+                        const timeSpan = entry.querySelector(".dm-last-time");
+                        let badge = entry.querySelector(".dm-unread-badge");
+
+                        if (lastMsgSpan) lastMsgSpan.textContent = msg.content || "";
+                        if (timeSpan) timeSpan.textContent = msg.time || "";
+                        if (badge) badge.remove();
+                    }
+                }
+
+                if (currentChannelType === "group" && currentGroupId && groupList) {
+                    const selector = `.group-entry[data-group-id="${safeCssSelector(currentGroupId)}"]`;
+                    const entry = groupList.querySelector(selector);
+                    if (entry) {
+                        const lastMsgSpan = entry.querySelector(".group-last-message");
+                        const timeSpan = entry.querySelector(".group-last-time");
+                        let badge = entry.querySelector(".group-unread-badge");
+
+                        if (lastMsgSpan) lastMsgSpan.textContent = msg.content || "";
+                        if (timeSpan) timeSpan.textContent = msg.time || "";
+                        if (badge) badge.remove();
+                    }
+                }
+
+                return;
+            }
+
+
+            if (data.type === "error") {
+                console.warn("Erreur WS:", data.message);
+                if (typeof showToast === "function") {
+                    showToast(data.message || "Erreur WebSocket.", "error");
+                }
+                return;
+            }
+
+            if (data.type === "force_logout") {
+                if (typeof showToast === "function") {
+                    showToast(data.reason || "Votre session a été fermée.", "error");
+                }
+                window.location.href = "/logout";
+                return;
+            }
+
+            if (data.type === "dm_notification") {
+                handleDmNotification(data);
+                return;
+            }
+
+            if (data.type === "group_notification") {
+                handleGroupNotification(data);
+                return;
+            }
+
+            if (data.type === "message_deleted") {
+                const deletedId = data.id;
+                messagesList = messagesList.filter(msg => msg.id !== deletedId);
+                renderMessages(messagesList);
+                return;
+            }
+
+            if (data.type === "command") {
+                const handled = handleCommandMessage(data);
+                if (!handled) {
+                    console.warn("Commande non gérée côté client:", data.command, data);
+                }
+                return;
+            }
+            
+            if (data.type === "reaction_update") {
+                const id = data.message_id;
+                const reactions = data.reactions || {};
+
+                if (!messagesList) messagesList = [];
+                const msg = messagesList.find(m => m.id === id);
+                if (msg) {
+                    msg.reactions = reactions;
+                    renderMessages(messagesList);
+                }
+                return;
+            }
+
+            if (data.type === "auto_mute") {
+                if (typeof showToast === "function") {
+                    showToast(data.message || "Tu as été mute automatiquement.", "error");
+                } else {
+                    alert(data.message || "Tu as été mute automatiquement.");
+                }
+                setTimeout(() => {
+                    try {
+                        location.reload();
+                    } catch (e) {
+                        console.warn("Reload failed after auto_mute:", e);
+                    }
+                }, 500);
+            }
+
+            if (data.type === "echo") {
+                console.log("[WS echo]", data.raw || data);
+                return;
+            }
+
+            console.warn("Message WS non géré:", data);
+        });
+
+        newWs.addEventListener("close", (event) => {
+            
+            if (ws !== newWs || wsGeneration !== thisGeneration) {
+                console.log("[WS] close d'une ancienne génération, ignoré.");
+                return;
+            }
+
+            console.log(
+                "WS close:",
+                "code=", event.code,
+                "reason=", event.reason,
+                "wasClean=", event.wasClean,
+                "(generation", thisGeneration, ")"
+            );
+
+            if (maintenanceActive) {
+                setWsStatus("maintenance");
+                return;
+            }
+
+            if (manualClose) {
+                console.log("WS fermé manuellement, aucune reconnexion.");
+                manualClose = false; 
+                return;
+            }
+
+            if (!allowReconnect) {
+                console.warn("WS fermé après erreur fatale, reconnexion désactivée.");
+                setWsStatus("error");
+                return;
+            }
+
+            setWsStatus("disconnected");
+            tryReconnect("close");
+        });
+
+        newWs.addEventListener("error", (event) => {
+            if (ws !== newWs || wsGeneration !== thisGeneration) {
+                return;
+            }
+            console.log("WS error:", event);
+        });
+    }
+
+    
+    
+    
+    function openGeneral() {
+        currentChannelType = "general";
+        currentTarget = null;
+        currentGroupId = null;
+        updateChannelHeader();
+        connectWs();
+        updateInputPermissions();
+    }
+
+    function openDm(pseudo, entryElem) {
+        if (!pseudo) return;
+        currentChannelType = "dm";
+        currentTarget = pseudo;
+        currentGroupId = null;
+        updateChannelHeader();
+        connectWs();
+        updateInputPermissions();
+
+        if (entryElem) {
+            const badge = entryElem.querySelector(".dm-unread-badge");
+            if (badge) badge.remove();
+        }
+    }
+
+    function openGroup(groupId, groupName, entryElem) {
+        if (!groupId || !groupName) return;
+        currentChannelType = "group";
+        currentTarget = groupName;
+        currentGroupId = groupId;
+        updateChannelHeader();
+        connectWs();
+        updateInputPermissions();
+
+        if (entryElem) {
+            const badge = entryElem.querySelector(".group-unread-badge");
+            if (badge) badge.remove();
+        }
+    }
+
+    
+    
+    
+    function handleDmNotification(data) {
+        if (!dmList) return;
+        const pseudo = data.other;
+        if (!pseudo) return;
+
+        const selector = `.dm-entry[data-pseudo="${safeCssSelector(pseudo)}"]`;
+        let entry = dmList.querySelector(selector);
+
+        const isCurrentOpen = (currentChannelType === "dm" && currentTarget === pseudo);
+
+        if (!entry) {
+            entry = document.createElement("li");
+            entry.className = "dm-entry flex items-center justify-between text-xs cursor-pointer hover:bg-emerald-50 px-2 py-1.5 rounded-lg";
+            entry.dataset.pseudo = pseudo;
+
+            entry.innerHTML = `
+                <div class="flex items-center gap-2 min-w-0">
+                    <div class="w-6 h-6 rounded-full bg-emerald-600/10 flex items-center justify-center text-[11px] font-semibold text-emerald-700">
+                        ${(pseudo[0] || "?").toUpperCase()}
+                    </div>
+                    <div class="flex flex-col min-w-0">
+                        <span class="font-semibold text-slate-800 truncate max-w-[120px]">
+                            ${pseudo}
+                        </span>
+                        <span class="text-[11px] text-slate-500 truncate max-w-[140px] dm-last-message"></span>
+                    </div>
+                </div>
+                <div class="flex flex-col items-end gap-0.5">
+                    <span class="text-[10px] text-slate-400 dm-last-time"></span>
+                </div>
+            `;
+
+            entry.addEventListener("click", () => {
+                openDm(pseudo, entry);
+            });
+
+            dmList.prepend(entry);
+
+            if (dmEmptyPlaceholder) {
+                dmEmptyPlaceholder.classList.add("hidden");
+            }
+        }
+
+        const lastMsgSpan = entry.querySelector(".dm-last-message");
+        const timeSpan = entry.querySelector(".dm-last-time");
+        let badge = entry.querySelector(".dm-unread-badge");
+
+        if (lastMsgSpan) lastMsgSpan.textContent = data.content || "";
+        if (timeSpan) timeSpan.textContent = data.time || "";
+
+        if (!isCurrentOpen) {
+            if (!badge) {
+                badge = document.createElement("span");
+                badge.className = "inline-flex items-center justify-center min-w-[18px] px-1 rounded-full bg-emerald-600 text-white text-[10px] font-semibold dm-unread-badge";
+                badge.textContent = "1";
+                const rightCol = entry.querySelector("div.flex-col.items-end");
+                if (rightCol) rightCol.appendChild(badge);
+            } else {
+                const n = parseInt(badge.textContent || "0", 10) || 0;
+                badge.textContent = String(n + 1);
+            }
+        }
+    }
+
+    function handleGroupNotification(data) {
+        if (!groupList) return;
+        const gid = data.group_id;
+        const gname = data.group_name || "Groupe";
+        if (!gid) return;
+
+        const selector = `.group-entry[data-group-id="${safeCssSelector(gid)}"]`;
+        let entry = groupList.querySelector(selector);
+
+        const isCurrentOpen = (currentChannelType === "group" && currentGroupId === gid);
+
+        if (!entry) {
+            entry = document.createElement("li");
+            entry.className = "group-entry border border-slate-100 rounded-lg px-2 py-1.5 cursor-pointer hover:bg-emerald-50";
+            entry.dataset.groupId = gid;
+            entry.dataset.groupName = gname;
+
+            entry.innerHTML = `
+                <div class="flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <div class="w-6 h-6 rounded-full bg-emerald-600/10 flex items-center justify-center text-[11px] font-semibold text-emerald-700">
+                            ${(gname[0] || "?").toUpperCase()}
+                        </div>
+                        <div class="flex flex-col min-w-0">
+                            <span class="font-semibold text-slate-800 truncate max-w-[120px]">
+                                ${gname}
+                            </span>
+                            <span class="text-[11px] text-slate-500 truncate max-w-[140px] group-last-message"></span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-end gap-0.5">
+                        <span class="text-[10px] text-slate-400 group-last-time"></span>
+                    </div>
+                </div>
+            `;
+
+            entry.addEventListener("click", () => {
+                openGroup(gid, gname, entry);
+            });
+
+            groupList.prepend(entry);
+        }
+
+        const lastMsgSpan = entry.querySelector(".group-last-message");
+        const timeSpan = entry.querySelector(".group-last-time");
+        let badge = entry.querySelector(".group-unread-badge");
+
+        if (lastMsgSpan) lastMsgSpan.textContent = data.content || "";
+        if (timeSpan) timeSpan.textContent = data.time || "";
+
+        if (!isCurrentOpen) {
+            if (!badge) {
+                badge = document.createElement("span");
+                badge.className = "inline-flex items-center justify-center min-w-[18px] px-1 rounded-full bg-emerald-600 text-white text-[10px] font-semibold group-unread-badge";
+                badge.textContent = "1";
+                const rightCol = entry.querySelector("div.flex-col.items-end");
+                if (rightCol) rightCol.appendChild(badge);
+            } else {
+                const n = parseInt(badge.textContent || "0", 10) || 0;
+                badge.textContent = String(n + 1);
+            }
+        }
+    }
+
+    
+    
+    
+    updateChannelHeader();
+    if (initialChannel === "dm" && initialDmWith) {
+        console.log("[INIT] Ouverture auto du DM avec", initialDmWith);
+        openDm(initialDmWith, null);
+    } else {
+        connectWs();
+    }
+    setInterval(pollMaintenance, 300000);
+
+    if (form && input) {
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const content = input.value.trim();
+            if (!content) return;
+
+            if (maintenanceActive) {
+                if (typeof showToast === "function") {
+                    showToast("Le site est en maintenance. Tu ne peux plus envoyer de messages pour le moment.", "error");
+                }
+                return;
+            }
+
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type: "send_message", content }));
+                input.value = "";
+            } else {
+                if (typeof showToast === "function") {
+                    showToast("Connexion au chat perdue. Recharge la page.", "error");
+                }
+            }
+        });
+    }
+
+    if (mpForm && mpPseudoInput) {
+        mpForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            if (!mpPseudoInput) return;
+            const pseudo = mpPseudoInput.value.trim();
+            if (!pseudo) return;
+            if (pseudo.toLowerCase() === "serveur") {
+                if (typeof showToast === "function") {
+                    showToast("Tu ne peux pas ouvrir manuellement un MP avec Serveur.", "error");
+                } else {
+                    alert("Tu ne peux pas ouvrir manuellement un MP avec Serveur.");
+                }
+                return;
+            }
+            const p = mpPseudoInput.value.trim();
+            if (!p) return;
+            openDm(p, null);
+        });
+    }
+
+    if (btnBackGeneral) {
+        btnBackGeneral.addEventListener("click", () => {
+            openGeneral();
+        });
+    }
+
+    if (dmList) {
+        dmList.querySelectorAll(".dm-entry").forEach(entry => {
+            const pseudo = entry.dataset.pseudo;
+            entry.addEventListener("click", () => {
+                openDm(pseudo, entry);
+            });
+        });
+    }
+
+    if (groupList) {
+        groupList.querySelectorAll(".group-entry").forEach(entry => {
+            const gid = entry.dataset.groupId;
+            const gname = entry.dataset.groupName;
+            entry.addEventListener("click", () => {
+                openGroup(gid, gname, entry);
+            });
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const err = document.getElementById("chat-error");
+        const ok = document.getElementById("chat-success");
+
+        if (err) {
+            setTimeout(() => {
+                err.style.opacity = "0";
+                setTimeout(() => err.remove(), 500);
+            }, 10000);
+        }
+
+        if (ok) {
+            setTimeout(() => {
+                ok.style.opacity = "0";
+                setTimeout(() => ok.remove(), 500);
+            }, 5000);
+        }
+    });
+</script>
+
+
+{% endblock %}

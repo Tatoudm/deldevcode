@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}C'est quoi le statut "connecté" ? • DDC{% endblock %}
+
+{% block content %}
+
+<div class="max-w-5xl mx-auto space-y-8">
+
+    
+    <header class="space-y-2 mt-4 md:mt-6">
+        <p class="text-xs uppercase tracking-wide text-emerald-600 font-semibold">
+            Documentation · Temps réel
+        </p>
+        <h1 class="text-2xl md:text-3xl font-bold text-slate-900">
+            C’est quoi le statut “connecté” ?
+        </h1>
+        <p class="text-sm md:text-base text-slate-600 max-w-2xl">
+            Sur DelDevCode, le statut “connecté” ne signifie pas seulement que tu es sur le site (ou que la personne a qui tu parles est connectée).
+            Il indique aussi l’état de ta connexion temps réel (WebSocket) au chat.
+        </p>
+    </header>
+
+    <article class="bg-white border border-slate-200 rounded-2xl shadow-sm p-5 md:p-6 space-y-6">
+
+        
+        <section class="space-y-2">
+            <h2 class="text-lg md:text-xl font-semibold text-slate-900">
+                1. Connexion standard vs connexion temps réel
+            </h2>
+            <p class="text-sm md:text-base text-slate-700 leading-relaxed">
+                Quand tu te connectes à DelDevCode avec ton compte, tu as une <span class="font-medium">
+                session</span> active sur le site.  
+                Mais pour recevoir les messages en temps réel, une deuxième couche existe :
+                la <span class="font-medium">connexion WebSocket</span>.
+            </p>
+            <ul class="list-disc list-inside text-sm md:text-base text-slate-700 space-y-1">
+                <li><span class="font-medium">Session :</span> tu es logué, tu peux accéder au chat, à ton profil, etc.</li>
+                <li><span class="font-medium">WebSocket :</span> tu es relié en direct au serveur pour les messages en temps réel.</li>
+            </ul>
+        </section>
+
+        
+        <section class="space-y-2">
+            <h2 class="text-lg md:text-xl font-semibold text-slate-900">
+                2. Le statut “connecté”
+            </h2>
+            <p class="text-sm md:text-base text-slate-700 leading-relaxed">
+                Le statut “connecté” (ou l’indicateur de connexion dans l’interface)
+                montre généralement si la connexion WebSocket est active ou non.
+            </p>
+            <ul class="list-disc list-inside text-sm md:text-base text-slate-700 space-y-1">
+                <li><span class="font-medium">Connecté :</span> ton navigateur est bien relié au serveur en temps réel, tu reçois les messages instantanément.</li>
+                <li><span class="font-medium">Déconnecté :</span> la connexion temps réel est coupée. Tu peux encore voir le site, mais les nouveaux messages ne s’affichent plus automatiquement.</li>
+                <li><span class="font-medium">Erreur :</span> la connexion est coupée à cause d'une erreur quelconque.</li>
+                <li><span class="font-medium">Maintenance :</span> la connexion est coupée à cause d'une maintenance.</li>
+            
+            </ul>
+            <p class="text-sm md:text-base text-slate-700 leading-relaxed">
+                Ce statut peut changer si :
+            </p>
+            <ul class="list-disc list-inside text-sm md:text-base text-slate-700 space-y-1">
+                <li>Ta connexion internet coupe ou devient instable.</li>
+                <li>Le serveur est en maintenance ou redémarre.</li>
+                <li>Tu fermes l’onglet ou mets ton appareil en veille.</li>
+                <li>Une erreur survient</li>
+            </ul>
+        </section>
+
+        
+        <section class="space-y-2">
+            <h2 class="text-lg md:text-xl font-semibold text-slate-900">
+                3. Que faire si le statut reste “déconnecté” ?
+            </h2>
+            <p class="text-sm md:text-base text-slate-700 leading-relaxed">
+                Si ton statut reste “erreur” (ou “déconnecté” dans de rare cas) ou que les messages ne s’actualisent plus :
+            </p>
+            <ul class="list-disc list-inside text-sm md:text-base text-slate-700 space-y-1">
+                <li>Essaie de <span class="font-medium">recharger la page</span>.</li>
+                <li>Vérifie ta connexion internet (Wi-Fi, données mobiles, etc.).</li>
+                <li>Ferme puis rouvre ton navigateur.</li>
+                <li>Si le problème persiste longtemps, il se peut que le serveur aie un problème.</li>
+            </ul>
+            <p class="text-sm md:text-base text-slate-700 leading-relaxed">
+                Tu peux également revenir plus tard ou vérifier s’il y a des annonces liées à une erreur.
+            </p>
+        </section>
+
+    </article>
+
+</div>
+
+{% endblock %}

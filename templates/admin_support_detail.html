@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+{% block title %}DDC Ticket #{{ ticket.id }}{% endblock %}
+
+{% block content %}
+
+<div class="max-w-4xl mx-auto mt-8 mb-12 space-y-6">
+
+    {% if erreur %}
+    <div class="bg-red-50 text-red-800 border border-red-200 px-4 py-3 rounded-xl shadow-sm">
+        <p class="text-sm">{{ erreur }}</p>
+    </div>
+    {% endif %}
+
+    {% if message %}
+    <div class="bg-emerald-50 text-emerald-800 border border-emerald-200 px-4 py-3 rounded-xl shadow-sm">
+        <p class="text-sm">{{ message }}</p>
+    </div>
+    {% endif %}
+
+    <section class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 space-y-3">
+        <div class="flex items-center justify-between gap-2">
+            <div>
+                <p class="text-xs uppercase tracking-wide text-emerald-600 font-semibold">
+                    Ticket de support
+                </p>
+                <h1 class="text-xl md:text-2xl font-bold text-slate-900">
+                    {{ ticket.title }}
+                </h1>
+            </div>
+            <div class="flex flex-col items-end gap-1">
+                <span class="text-xs px-2 py-0.5 rounded-full
+                    {% if ticket.status == 'open' %}
+                        bg-emerald-100 text-emerald-700
+                    {% else %}
+                        bg-slate-100 text-slate-700
+                    {% endif %}
+                    font-semibold">
+                    {{ 'OUVERT' if ticket.status == 'open' else 'FERMÉ' }}
+                </span>
+                <p class="text-[11px] text-slate-500">
+                    Créé le {{ ticket.created_at_display }}
+                </p>
+            </div>
+        </div>
+
+        <div class="grid gap-3 md:grid-cols-2">
+            <div class="space-y-1">
+                <p class="text-xs text-slate-500">Type de demande</p>
+                <p class="text-sm font-semibold text-slate-900">
+                    {{ ticket.subject_label }}
+                </p>
+            </div>
+            <div class="space-y-1">
+                <p class="text-xs text-slate-500">Adresse email</p>
+                <p class="text-sm font-mono text-slate-900">
+                    {{ ticket.email }}
+                </p>
+            </div>
+            <div class="space-y-1">
+                <p class="text-xs text-slate-500">Ouvert par (pseudo)</p>
+                {% if ticket.created_by_username %}
+                    <p class="text-sm text-slate-900">
+                        <a href="/admin/user/by-name/{{ ticket.created_by_username }}" class="text-emerald-600 hover:text-emerald-500 underline">
+                            {{ ticket.created_by_username }}
+                        </a>
+                    </p>
+                {% else %}
+                    <p class="text-sm text-slate-500 italic">
+                        Inconnu
+                    </p>
+                {% endif %}
+
+            </div>
+            <div class="space-y-1">
+                <p class="text-xs text-slate-500">Dernière réponse admin</p>
+                {% if ticket.last_reply_by %}
+                    <p class="text-sm text-slate-900">
+                        {{ ticket.last_reply_by }}
+                        {% if ticket.last_reply_at_display %}
+                            <span class="text-xs text-slate-500">({{ ticket.last_reply_at_display }})</span>
+                        {% endif %}
+                    </p>
+                {% else %}
+                    <p class="text-sm text-slate-500 italic">
+                        Aucune réponse envoyée pour l'instant.
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <p class="text-xs text-slate-500 mb-1">Description du problème</p>
+            <div class="text-sm text-slate-900 whitespace-pre-wrap bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
+                {{ ticket.description }}
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 space-y-4">
+        <h2 class="text-lg font-semibold text-slate-900">
+            Répondre au ticket
+        </h2>
+
+        {% if ticket.status == 'open' %}
+        <form method="POST" action="{{ url_for('admin.admin_support_reply', ticket_id=ticket.id) }}" class="space-y-3">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div>
+                <label for="reply_subject" class="block text-xs font-semibold text-slate-600 mb-1">
+                    Objet de la réponse
+                </label>
+                <input type="text" id="reply_subject" name="reply_subject" placeholder="[DelDevCode] Réponse à ton ticket : {{ ticket.title }}" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                <p class="text-[11px] text-slate-500 mt-1">
+                    Si tu laisses vide, un objet par défaut sera utilisé.
+                </p>
+            </div>
+
+            <div>
+                <label for="reply_body" class="block text-xs font-semibold text-slate-600 mb-1">
+                    Message à envoyer <span class="text-red-500">*</span>
+                </label>
+                <textarea id="reply_body" name="reply_body" rows="6" required class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" placeholder="Écris ici ta réponse au ticket.">{{ '' }}</textarea>
+            </div>
+
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                <label class="inline-flex items-center gap-2 text-xs text-slate-700">
+                    <input type="checkbox" name="close_after" class="rounded border-slate-300">
+                    Fermer le ticket après l'envoi de la réponse
+                </label>
+
+                <div class="flex items-center gap-2">
+                    <button type="submit" class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-500">
+                        Envoyer la réponse
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        {% endif %}
+
+        {% if ticket.status == 'open' %}
+
+        <form method="POST" action="{{ url_for('admin.admin_support_close', ticket_id=ticket.id) }}" class="pt-2 space-y-2">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <label for="close_reason" class="block text-xs font-semibold text-slate-600 mb-1">
+                    Raison de la fermeture (optionnel, sera envoyée au client)
+            </label>
+            <textarea id="close_reason" name="close_reason" rows="3" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" placeholder="Ex: Problème résolu, infraction au règlement, etc."></textarea>
+
+            <button type="submit" class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-slate-100 text-slate-800 text-xs font-semibold hover:bg-slate-200 border border-slate-300 mt-2">
+                Fermer le ticket
+            </button>
+        </form>
+        {% else %}
+        <form method="POST" action="{{ url_for('admin.admin_support_reopen', ticket_id=ticket.id) }}" class="pt-2">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-semibold hover:bg-emerald-100 border border-emerald-300">
+                Réouvrir le ticket
+            </button>
+        </form>
+        <form method="POST" action="{{ url_for('admin.admin_support_delete', ticket_id=ticket.id) }}" class="pt-2" onsubmit="return confirm('Supprimer définitivement ce ticket ? Cette action est irréversible.');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-red-50 text-red-700 text-xs font-semibold hover:bg-red-100 border border-red-300">
+                Supprimer définitivement
+            </button>
+        </form>
+        {% endif %}
+
+    </section>
+
+</div>
+
+{% endblock %}

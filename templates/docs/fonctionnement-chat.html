@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Comment fonctionne le chat ? • DDC{% endblock %}
+
+{% block content %}
+
+<div class="max-w-5xl mx-auto space-y-8">
+
+    
+    <header class="space-y-2 mt-4 md:mt-6">
+        <p class="text-xs uppercase tracking-wide text-emerald-600 font-semibold">
+            Documentation · Chat
+        </p>
+        <h1 class="text-2xl md:text-3xl font-bold text-slate-900">
+            Comment fonctionne le chat ?
+        </h1>
+        <p class="text-sm md:text-base text-slate-600 max-w-2xl">
+            Cette page explique ce qui se passe quand tu envoies un message, comment il circule
+            entre ton navigateur et le serveur, et ce que DelDevCode garde (ou ne garde pas).
+        </p>
+    </header>
+
+    <article class="bg-white border border-slate-200 rounded-2xl shadow-sm p-5 md:p-6 space-y-6">
+
+        
+        <section class="space-y-2">
+            <h2 class="text-lg md:text-xl font-semibold text-slate-900">
+                1. Envoi d’un message
+            </h2>
+            <p class="text-sm md:text-base text-slate-700 leading-relaxed">
+                Quand tu écris un message dans le chat et que tu appuies sur <span class="font-medium">Entrée</span>
+                (ou sur le bouton d’envoi), ton navigateur envoie ton texte au serveur DelDevCode via une connexion
+                temps réel (<a href="https://www.ionos.fr/digitalguide/sites-internet/developpement-web/quest-ce-que-le-websocket/" class="text-emerald-600 underline-offset-2 hover:underline">WebSocket</a>).
+            </p>
+            <ul class="list-disc list-inside text-sm md:text-base text-slate-700 space-y-1">
+                <li>Le message est associé à ton compte (pseudo / identifiant).</li>
+                <li>Le serveur vérifie que tu as le droit d’écrire dans ce salon.</li>
+                <li>Si tout est OK, le message est diffusé aux autres utilisateurs connectés au même salon.</li>
+            </ul>
+        </section>
+
+        
+        <section class="space-y-2">
+            <h2 class="text-lg md:text-xl font-semibold text-slate-900">
+                2. Affichage en temps réel
+            </h2>
+            <p class="text-sm md:text-base text-slate-700 leading-relaxed">
+                Grâce à la connexion WebSocket, ton navigateur est “abonné” aux nouveaux messages.
+                Tu n’as pas besoin de recharger la page :
+            </p>
+            <ul class="list-disc list-inside text-sm md:text-base text-slate-700 space-y-1">
+                <li>Dès qu’un message est publié dans le salon, le serveur l’envoie à tous les clients connectés.</li>
+                <li>Le message apparaît alors directement dans ta liste de messages.</li>
+                <li>Les informations (auteur, contenu, heure, etc.) sont mises à jour automatiquement.</li>
+            </ul>
+        </section>
+
+        
+        <section class="space-y-2">
+            <h2 class="text-lg md:text-xl font-semibold text-slate-900">
+                3. Salons, groupes et messages privés
+            </h2>
+            <p class="text-sm md:text-base text-slate-700 leading-relaxed">
+                Le fonctionnement global est le même pour les différents types de conversations :
+            </p>
+            <ul class="list-disc list-inside text-sm md:text-base text-slate-700 space-y-1">
+                <li><span class="font-medium">Salons publics :</span> visibles par tous les utilisateurs autorisés.</li>
+                <li><span class="font-medium">Groupes :</span> accessibles uniquement aux membres du groupe.</li>
+                <li><span class="font-medium">Messages privés (MP) :</span> les messages sont uniquement visibles par les personnes impliquées.</li>
+            </ul>
+            <p class="text-sm md:text-base text-slate-700 leading-relaxed">
+                Selon la configuration de DelDevCode, certains messages peuvent être conservés pendant un temps limité
+                ou modérés en cas de non-respect des règles.
+            </p>
+        </section>
+
+        
+        <section class="space-y-2">
+            <h2 class="text-lg md:text-xl font-semibold text-slate-900">
+                4. Règles et modération
+            </h2>
+            <p class="text-sm md:text-base text-slate-700 leading-relaxed">
+                Le chat est un espace de discussion, pas un défouloir. Des règles de base s’appliquent :
+            </p>
+            <ul class="list-disc list-inside text-sm md:text-base text-slate-700 space-y-1">
+                <li>Pas d’insultes, harcèlement ou propos discriminatoires.</li>
+                <li>Pas de spam ou de flood volontaire.</li>
+                <li>Pas de partage de contenu illégal ou inapproprié.</li>
+            </ul>
+            <p class="text-sm md:text-base text-slate-700 leading-relaxed">
+                En cas de non-respect, des restrictions peuvent être appliquées
+                (mute temporaire, ban, etc.), expliquées dans la page
+                <a href="/docs/pourquoi-ban" class="text-emerald-600 underline-offset-2 hover:underline">
+                    “Pourquoi suis-je banni ?”
+                </a>.
+            </p>
+        </section>
+
+    </article>
+
+</div>
+
+{% endblock %}
