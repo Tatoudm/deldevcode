@@ -132,9 +132,9 @@
             <div>
                 <label class="block text-xs font-semibold text-slate-600 mb-1">Type</label>
                 <select name="mode" class="text-sm px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-                    <option value="pseudo" {{ 'selected' if mode="pseudo" else '' }}>Pseudo</option>
-                    <option value="email" {{ 'selected' if mode="email" else '' }}>Email</option>
-                    <option value="name" {{ 'selected' if mode="name" else '' }}>Prénom / Nom</option>
+                    <option value="pseudo" {{ 'selected' if mode == "pseudo" else '' }}>Pseudo</option>
+                    <option value="email" {{ 'selected' if mode == "email" else '' }}>Email</option>
+                    <option value="name" {{ 'selected' if mode == "name" else '' }}>Prénom / Nom</option>
 
                 </select>
             </div>
