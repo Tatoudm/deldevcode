@@ -16,7 +16,7 @@ Just a chat app I’ve been focusing on lately. Feel free to use it and customiz
 Follow these steps to get your own instance of DelDevCode up and running:
 
 ### 1. Download the Project
-Go to the **[Releases](https://github.com/ton-username/repo/releases)** page and download the latest `.zip` file. Extract it to your desired folder.
+Go to the **[Releases](https://github.com/Tatoudm/deldevcode/releases)** page and download the latest `.zip` file. Extract it to your desired folder.
 
 ### 2. Configuration (`.env`)
 The app needs some information to run. 
