@@ -1,28 +1,38 @@
-{% extends "base.html" %}
-{% block title %}DDC Plus - Succès{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}DDC Plus - Succès{% endblock %} {%
+block content %}
 <div class="max-w-xl mx-auto mt-6">
-    <div class="bg-white border border-emerald-200 rounded-xl shadow-sm p-6 text-center space-y-3">
-        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 text-2xl">
-            ✅
-        </div>
-        <h1 class="text-xl md:text-2xl font-semibold text-slate-900">
-            Abonnement confirmé 🎉
-        </h1>
-        <p class="text-sm md:text-base text-slate-700">
-            Merci d'avoir souscrit à <span class="font-semibold">DelDevCode Plus</span>.
-            Ton compte va être mis à jour. Si ce n’est pas déjà le cas, rafraîchis la page dans quelques secondes.
-        </p>
-
-        <div class="flex flex-col md:flex-row gap-3 justify-center pt-2">
-            <a href="{{ url_for('chat.chat') }}" class="inline-flex justify-center items-center px-4 py-2 rounded-md bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 transition">
-                Retourner au chat
-            </a>
-            <a href="{{ url_for('dev.dev_dashboard') }}" class="inline-flex justify-center items-center px-4 py-2 rounded-md border border-slate-300 text-slate-800 text-sm font-medium hover:bg-slate-50 transition">
-                Voir mes clés API
-            </a>
-        </div>
+  <div
+    class="bg-white border border-emerald-200 rounded-xl shadow-sm p-6 text-center space-y-3"
+  >
+    <div
+      class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 text-2xl"
+    >
+      ✅
     </div>
+    <h1 class="text-xl md:text-2xl font-semibold text-slate-900">
+      Abonnement confirmé 🎉
+    </h1>
+    <p class="text-sm md:text-base text-slate-700">
+      Merci d'avoir souscrit à
+      <span class="font-semibold">DelDevCode Plus</span>. Ton compte va être mis
+      à jour. Si ce n’est pas déjà le cas, rafraîchis la page dans quelques
+      secondes.
+    </p>
+
+    <div class="flex flex-col md:flex-row gap-3 justify-center pt-2">
+      <a
+        href="{{ url_for('chat.chat') }}"
+        class="inline-flex justify-center items-center px-4 py-2 rounded-md bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 transition"
+      >
+        Retourner au chat
+      </a>
+      <a
+        href="{{ url_for('dev.dev_dashboard') }}"
+        class="inline-flex justify-center items-center px-4 py-2 rounded-md border border-slate-300 text-slate-800 text-sm font-medium hover:bg-slate-50 transition"
+      >
+        Voir mes clés API
+      </a>
+    </div>
+  </div>
 </div>
 {% endblock %}

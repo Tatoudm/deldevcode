@@ -1,157 +1,179 @@
-{% extends "base.html" %}
-{% block title %}DDC Home{% endblock %}
-
-{% block content %}
-
-{% if erreur %}
+{% extends "base.html" %} {% block title %}DDC Home{% endblock %} {% block
+content %} {% if erreur %}
 <div class="max-w-3xl mx-auto mb-6">
-    <div class="bg-red-50 text-red-800 border border-red-200 px-4 py-3 rounded-xl shadow-sm flex items-start gap-3">
-        <span class="text-red-500 text-xl font-bold leading-none mt-0.5">!</span>
-        <p class="text-sm md:text-base">
-            {{ erreur }}
-        </p>
-    </div>
+  <div
+    class="bg-red-50 text-red-800 border border-red-200 px-4 py-3 rounded-xl shadow-sm flex items-start gap-3"
+  >
+    <span class="text-red-500 text-xl font-bold leading-none mt-0.5">!</span>
+    <p class="text-sm md:text-base">{{ erreur }}</p>
+  </div>
 </div>
 {% endif %}
 
 <div class="max-w-5xl mx-auto">
+  <section class="grid gap-8 md:grid-cols-2 items-center mb-10">
+    <div class="space-y-4">
+      {% if nom %}
+      <p class="text-sm uppercase tracking-wide text-emerald-600 font-semibold">
+        Connecté en tant que {{ nom }}
+      </p>
+      <h2 class="text-3xl md:text-4xl font-bold text-slate-900">
+        Bienvenue sur ton espace de chat anonyme
+      </h2>
+      <p class="text-slate-700 text-sm md:text-base leading-relaxed">
+        Discute librement, change de pseudo quand tu veux et rejoins des
+        conversations sans pression. Ton identité réelle reste privée, seul ton
+        pseudo compte.
+      </p>
+      <div class="flex flex-wrap gap-3 pt-2">
+        <a
+          href="/chat"
+          class="inline-flex items-center justify-center px-5 py-2.5 rounded-md bg-emerald-600 text-white text-sm md:text-base font-medium hover:bg-emerald-500 transition"
+        >
+          Accéder au chat
+        </a>
+      </div>
+      {% else %}
+      <p class="text-sm uppercase tracking-wide text-emerald-600 font-semibold">
+        Chat 100% anonyme
+      </p>
+      <h2 class="text-3xl md:text-4xl font-bold text-slate-900">
+        Parle librement, garde ton anonymat.
+      </h2>
+      <p class="text-slate-700 text-sm md:text-base leading-relaxed">
+        Rejoins un chat où tu peux t’exprimer sans filtre, sous un pseudo. Tu
+        peux lire, parler, rencontrer du monde… mais créer un compte te donne
+        plus de contrôle : réserves ton pseudo, garde tes salons favoris et ton
+        historique.
+      </p>
+      <div class="flex flex-wrap gap-3 pt-3">
+        <a
+          href="/register"
+          class="inline-flex items-center justify-center px-5 py-2.5 rounded-md bg-emerald-600 text-white text-sm md:text-base font-medium hover:bg-emerald-500 transition"
+        >
+          Créer un compte
+        </a>
+        <a
+          href="/login"
+          class="inline-flex items-center justify-center px-5 py-2.5 rounded-md border border-slate-300 text-slate-800 text-sm md:text-base font-medium hover:bg-slate-100 transition"
+        >
+          Se connecter
+        </a>
+      </div>
+      <p class="text-xs text-slate-500 pt-2">
+        Tu veux juste tester ? Crée un compte rapide, aucun roman à remplir.
+      </p>
+      {% endif %}
+    </div>
 
-    
-    <section class="grid gap-8 md:grid-cols-2 items-center mb-10">
-        <div class="space-y-4">
-            {% if nom %}
-                <p class="text-sm uppercase tracking-wide text-emerald-600 font-semibold">
-                    Connecté en tant que {{ nom }}
-                </p>
-                <h2 class="text-3xl md:text-4xl font-bold text-slate-900">
-                    Bienvenue sur ton espace de chat anonyme
-                </h2>
-                <p class="text-slate-700 text-sm md:text-base leading-relaxed">
-                    Discute librement, change de pseudo quand tu veux et rejoins des conversations sans pression.
-                    Ton identité réelle reste privée, seul ton pseudo compte.
-                </p>
-                <div class="flex flex-wrap gap-3 pt-2">
-                    <a href="/chat" class="inline-flex items-center justify-center px-5 py-2.5 rounded-md bg-emerald-600 text-white text-sm md:text-base font-medium hover:bg-emerald-500 transition">
-                        Accéder au chat
-                    </a>
-                </div>
-            {% else %}
-                <p class="text-sm uppercase tracking-wide text-emerald-600 font-semibold">
-                    Chat 100% anonyme
-                </p>
-                <h2 class="text-3xl md:text-4xl font-bold text-slate-900">
-                    Parle librement, garde ton anonymat.
-                </h2>
-                <p class="text-slate-700 text-sm md:text-base leading-relaxed">
-                    Rejoins un chat où tu peux t’exprimer sans filtre, sous un pseudo.
-                    Tu peux lire, parler, rencontrer du monde… mais créer un compte te donne plus de contrôle :
-                    réserves ton pseudo, garde tes salons favoris et ton historique.
-                </p>
-                <div class="flex flex-wrap gap-3 pt-3">
-                    <a href="/register" class="inline-flex items-center justify-center px-5 py-2.5 rounded-md bg-emerald-600 text-white text-sm md:text-base font-medium hover:bg-emerald-500 transition">
-                        Créer un compte
-                    </a>
-                    <a href="/login" class="inline-flex items-center justify-center px-5 py-2.5 rounded-md border border-slate-300 text-slate-800 text-sm md:text-base font-medium hover:bg-slate-100 transition">
-                        Se connecter
-                    </a>
-                </div>
-                <p class="text-xs text-slate-500 pt-2">
-                    Tu veux juste tester ? Crée un compte rapide, aucun roman à remplir.
-                </p>
-            {% endif %}
+    <div class="hidden md:block">
+      <div
+        class="rounded-2xl border border-slate-200 bg-white shadow-sm p-4 space-y-3"
+      >
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span class="text-xs font-medium text-slate-600">Salon public</span>
+          </div>
+          <span class="text-[11px] text-slate-400">anonyme-#3241</span>
         </div>
 
-        
-        <div class="hidden md:block">
-            <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-4 space-y-3">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                        <span class="text-xs font-medium text-slate-600">Salon public</span>
-                    </div>
-                    <span class="text-[11px] text-slate-400">anonyme-#3241</span>
-                </div>
-
-                <div class="space-y-2 text-sm">
-                    <div class="flex gap-2">
-                        <span class="font-semibold text-emerald-700">GhostUser</span>
-                        <p class="text-slate-700">Quelqu’un pour parler cette nuit ?</p>
-                    </div>
-                    <div class="flex gap-2">
-                        <span class="font-semibold text-sky-700">Anon42</span>
-                        <p class="text-slate-700">Ici tu peux parler sans être jugé, c’est un peu le but 😄</p>
-                    </div>
-                    <div class="flex gap-2">
-                        <span class="font-semibold text-violet-700">NoName</span>
-                        <p class="text-slate-700">Crée un compte si tu veux garder ton pseudo 👀</p>
-                    </div>
-                </div>
-
-                <div class="mt-4">
-                    <div class="flex items-center gap-2 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-500 bg-slate-50">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                        <span>Les messages sont liés à ton pseudo, pas à ton identité réelle.</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    
-    <section class="mt-6 mb-10">
-        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-start gap-3">
-            <div class="bg-emerald-600 text-white w-8 h-8 rounded-lg flex items-center justify-center text-lg font-bold">
-                ?
-            </div>
-            <div class="flex-1">
-                <h3 class="text-slate-900 font-semibold text-sm md:text-base">
-                    Un problème avec ton compte, une erreur ou une question ?
-                </h3>
-                <p class="text-slate-700 text-xs md:text-sm mt-1">
-                    Notre équipe est là pour t’aider. Tu peux créer un ticket en quelques secondes.
-                </p>
-
-                <a href="/support" class="inline-flex items-center justify-center mt-3 px-4 py-2 rounded-md bg-emerald-600 text-white text-xs md:text-sm font-medium hover:bg-emerald-500 transition">
-                    Contacter le support →
-                </a>
-            </div>
-        </div>
-    </section>
-
-
-    
-    <section class="grid gap-6 md:grid-cols-3 text-sm md:text-base">
-        <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
-            <h3 class="font-semibold text-slate-900 mb-1.5 flex items-center gap-2">
-                <span class="text-emerald-600 text-lg">🕵️</span>
-                Anonymat
-            </h3>
+        <div class="space-y-2 text-sm">
+          <div class="flex gap-2">
+            <span class="font-semibold text-emerald-700">GhostUser</span>
+            <p class="text-slate-700">Quelqu’un pour parler cette nuit ?</p>
+          </div>
+          <div class="flex gap-2">
+            <span class="font-semibold text-sky-700">Anon42</span>
             <p class="text-slate-700">
-                Choisis un pseudo et parle librement. Tu peux en changer quand tu veux, sans afficher ton vrai nom.
+              Ici tu peux parler sans être jugé, c’est un peu le but 😄
             </p>
-        </div>
-
-        <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
-            <h3 class="font-semibold text-slate-900 mb-1.5 flex items-center gap-2">
-                <span class="text-emerald-600 text-lg">⭐</span>
-                Pseudos réservés
-            </h3>
+          </div>
+          <div class="flex gap-2">
+            <span class="font-semibold text-violet-700">NoName</span>
             <p class="text-slate-700">
-                En créant un compte, tu gardes ton pseudo, ton style et ta réputation sur le chat.
+              Crée un compte si tu veux garder ton pseudo 👀
             </p>
+          </div>
         </div>
 
-        <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
-            <h3 class="font-semibold text-slate-900 mb-1.5 flex items-center gap-2">
-                <span class="text-emerald-600 text-lg">💬</span>
-                Plus de fonctionnalités
-            </h3>
-            <p class="text-slate-700">
-                Accès à plus de salons, historique, favoris, et d’autres options réservées aux membres.
-            </p>
+        <div class="mt-4">
+          <div
+            class="flex items-center gap-2 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-500 bg-slate-50"
+          >
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+            <span
+              >Les messages sont liés à ton pseudo, pas à ton identité
+              réelle.</span
+            >
+          </div>
         </div>
-    </section>
+      </div>
+    </div>
+  </section>
 
+  <section class="mt-6 mb-10">
+    <div
+      class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-start gap-3"
+    >
+      <div
+        class="bg-emerald-600 text-white w-8 h-8 rounded-lg flex items-center justify-center text-lg font-bold"
+      >
+        ?
+      </div>
+      <div class="flex-1">
+        <h3 class="text-slate-900 font-semibold text-sm md:text-base">
+          Un problème avec ton compte, une erreur ou une question ?
+        </h3>
+        <p class="text-slate-700 text-xs md:text-sm mt-1">
+          Notre équipe est là pour t’aider. Tu peux créer un ticket en quelques
+          secondes.
+        </p>
+
+        <a
+          href="/support"
+          class="inline-flex items-center justify-center mt-3 px-4 py-2 rounded-md bg-emerald-600 text-white text-xs md:text-sm font-medium hover:bg-emerald-500 transition"
+        >
+          Contacter le support →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="grid gap-6 md:grid-cols-3 text-sm md:text-base">
+    <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+      <h3 class="font-semibold text-slate-900 mb-1.5 flex items-center gap-2">
+        <span class="text-emerald-600 text-lg">🕵️</span>
+        Anonymat
+      </h3>
+      <p class="text-slate-700">
+        Choisis un pseudo et parle librement. Tu peux en changer quand tu veux,
+        sans afficher ton vrai nom.
+      </p>
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+      <h3 class="font-semibold text-slate-900 mb-1.5 flex items-center gap-2">
+        <span class="text-emerald-600 text-lg">⭐</span>
+        Pseudos réservés
+      </h3>
+      <p class="text-slate-700">
+        En créant un compte, tu gardes ton pseudo, ton style et ta réputation
+        sur le chat.
+      </p>
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+      <h3 class="font-semibold text-slate-900 mb-1.5 flex items-center gap-2">
+        <span class="text-emerald-600 text-lg">💬</span>
+        Plus de fonctionnalités
+      </h3>
+      <p class="text-slate-700">
+        Accès à plus de salons, historique, favoris, et d’autres options
+        réservées aux membres.
+      </p>
+    </div>
+  </section>
 </div>
 
 {% endblock %}

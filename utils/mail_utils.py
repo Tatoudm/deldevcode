@@ -1,101 +1,100 @@
-
-import os 
-import ssl 
-import smtplib 
-from email .message import EmailMessage 
-from datetime import datetime 
-import html as html_lib 
-
+import os
+import ssl
+import smtplib
+from email.message import EmailMessage
+from datetime import datetime
+import html as html_lib
 
 
-def parse_name_from_email (email :str ):
-    if not email :
-        return None ,None 
+def parse_name_from_email(email: str):
+    if not email:
+        return None, None
 
-    email =email .lower ().strip ()
-    if not email .endswith ("@providencechampion.be"):
-        return None ,None 
+    email = email.lower().strip()
+    if not email.endswith("@providencechampion.be"):
+        return None, None
 
-    local_part =email .split ("@")[0 ]
-    parts =local_part .split (".")
-    if len (parts )<2 :
-        return None ,None 
+    local_part = email.split("@")[0]
+    parts = local_part.split(".")
+    if len(parts) < 2:
+        return None, None
 
-    first =parts [0 ].replace ("-"," ").title ()
-    last =" ".join (parts [1 :]).replace ("-"," ").title ()
-    return first ,last 
+    first = parts[0].replace("-", " ").title()
+    last = " ".join(parts[1:]).replace("-", " ").title()
+    return first, last
 
 
-def send_verification_email (to_email :str ,code :str ):
-    EMAIL_ADDRESS =os .environ .get ("EMAIL_ADDRESS")
-    EMAIL_PASSWORD =os .environ .get ("EMAIL_PASSWORD")
+def send_verification_email(to_email: str, code: str):
+    EMAIL_ADDRESS = os.environ.get("EMAIL_ADDRESS")
+    EMAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD")
 
-    if not EMAIL_ADDRESS or not EMAIL_PASSWORD :
-        raise RuntimeError ("EMAIL_ADDRESS ou EMAIL_PASSWORD non configuré dans le .env")
+    if not EMAIL_ADDRESS or not EMAIL_PASSWORD:
+        raise RuntimeError("EMAIL_ADDRESS ou EMAIL_PASSWORD non configuré dans le .env")
 
-    smtp_host =os .environ .get ("SMTP_HOST")
-    smtp_port =int (os .environ .get ("SMTP_PORT","465"))
-    smtp_use_ssl =os .environ .get ("SMTP_USE_SSL","1").lower ()in ("1","true","yes")
+    smtp_host = os.environ.get("SMTP_HOST")
+    smtp_port = int(os.environ.get("SMTP_PORT", "465"))
+    smtp_use_ssl = os.environ.get("SMTP_USE_SSL", "1").lower() in ("1", "true", "yes")
 
-    if not smtp_host :
-        raise RuntimeError (
-        "Vous devez définir SMTP_HOST dans le .env "
-        "(ex: serverxxx.web-hosting.com ou mail.privateemail.com)"
+    if not smtp_host:
+        raise RuntimeError(
+            "Vous devez définir SMTP_HOST dans le .env "
+            "(ex: serverxxx.web-hosting.com ou mail.privateemail.com)"
         )
 
-    msg =EmailMessage ()
-    msg ["Subject"]="Votre code de vérification"
-    msg ["From"]=EMAIL_ADDRESS 
-    msg ["To"]=to_email 
-    msg .set_content (f"Votre code de vérification est : {code }")
+    msg = EmailMessage()
+    msg["Subject"] = "Votre code de vérification"
+    msg["From"] = EMAIL_ADDRESS
+    msg["To"] = to_email
+    msg.set_content(f"Votre code de vérification est : {code }")
 
-    if smtp_use_ssl :
-        context =ssl .create_default_context ()
-        with smtplib .SMTP_SSL (smtp_host ,smtp_port ,context =context )as smtp :
-            smtp .login (EMAIL_ADDRESS ,EMAIL_PASSWORD )
-            smtp .send_message (msg )
-    else :
-        with smtplib .SMTP (smtp_host ,smtp_port )as smtp :
-            smtp .starttls (context =ssl .create_default_context ())
-            smtp .login (EMAIL_ADDRESS ,EMAIL_PASSWORD )
-            smtp .send_message (msg )
+    if smtp_use_ssl:
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL(smtp_host, smtp_port, context=context) as smtp:
+            smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+            smtp.send_message(msg)
+    else:
+        with smtplib.SMTP(smtp_host, smtp_port) as smtp:
+            smtp.starttls(context=ssl.create_default_context())
+            smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+            smtp.send_message(msg)
 
-def send_group_invite_email (to_email :str ,inviter_name :str ,group_name :str ):
+
+def send_group_invite_email(to_email: str, inviter_name: str, group_name: str):
     """
     Envoie un email d'invitation à rejoindre un groupe.
     """
-    EMAIL_ADDRESS =os .environ .get ("EMAIL_ADDRESS")
-    EMAIL_PASSWORD =os .environ .get ("EMAIL_PASSWORD")
+    EMAIL_ADDRESS = os.environ.get("EMAIL_ADDRESS")
+    EMAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD")
 
-    if not EMAIL_ADDRESS or not EMAIL_PASSWORD :
-        raise RuntimeError ("EMAIL_ADDRESS ou EMAIL_PASSWORD non configuré dans le .env")
+    if not EMAIL_ADDRESS or not EMAIL_PASSWORD:
+        raise RuntimeError("EMAIL_ADDRESS ou EMAIL_PASSWORD non configuré dans le .env")
 
-    smtp_host =os .environ .get ("SMTP_HOST")
-    smtp_port =int (os .environ .get ("SMTP_PORT","465"))
-    smtp_use_ssl =os .environ .get ("SMTP_USE_SSL","1").lower ()in ("1","true","yes")
+    smtp_host = os.environ.get("SMTP_HOST")
+    smtp_port = int(os.environ.get("SMTP_PORT", "465"))
+    smtp_use_ssl = os.environ.get("SMTP_USE_SSL", "1").lower() in ("1", "true", "yes")
 
-    if not smtp_host :
-        raise RuntimeError (
-        "Vous devez définir SMTP_HOST dans le .env "
-        "(ex: serverxxx.web-hosting.com ou mail.privateemail.com)"
+    if not smtp_host:
+        raise RuntimeError(
+            "Vous devez définir SMTP_HOST dans le .env "
+            "(ex: serverxxx.web-hosting.com ou mail.privateemail.com)"
         )
 
-    msg =EmailMessage ()
-    msg ["Subject"]=f"{inviter_name } t'invite à rejoindre le groupe « {group_name } » sur DelDevCode"
-    msg ["From"]=EMAIL_ADDRESS 
-    msg ["To"]=to_email 
-
-
-    plain_text =(
-    f"{inviter_name } t'invite à rejoindre le groupe « {group_name } » sur DelDevCode.\n\n"
-    "Clique sur le lien ci-dessous pour ouvrir le chat :\n"
-    "https://deldevcode.org/chat\n\n"
-    "A tout de suite sur DelDevCode 👋"
+    msg = EmailMessage()
+    msg["Subject"] = (
+        f"{inviter_name } t'invite à rejoindre le groupe « {group_name } » sur DelDevCode"
     )
-    msg .set_content (plain_text )
+    msg["From"] = EMAIL_ADDRESS
+    msg["To"] = to_email
 
+    plain_text = (
+        f"{inviter_name } t'invite à rejoindre le groupe « {group_name } » sur DelDevCode.\n\n"
+        "Clique sur le lien ci-dessous pour ouvrir le chat :\n"
+        "https://deldevcode.org/chat\n\n"
+        "A tout de suite sur DelDevCode 👋"
+    )
+    msg.set_content(plain_text)
 
-    html_content =f"""
+    html_content = f"""
     <!DOCTYPE html>
     <html lang="fr">
     <head>
@@ -182,50 +181,53 @@ def send_group_invite_email (to_email :str ,inviter_name :str ,group_name :str )
     </html>
     """
 
-    msg .add_alternative (html_content ,subtype ="html")
+    msg.add_alternative(html_content, subtype="html")
 
-    if smtp_use_ssl :
-        context =ssl .create_default_context ()
-        with smtplib .SMTP_SSL (smtp_host ,smtp_port ,context =context )as smtp :
-            smtp .login (EMAIL_ADDRESS ,EMAIL_PASSWORD )
-            smtp .send_message (msg )
-    else :
-        with smtplib .SMTP (smtp_host ,smtp_port )as smtp :
-            smtp .starttls (context =ssl .create_default_context ())
-            smtp .login (EMAIL_ADDRESS ,EMAIL_PASSWORD )
-            smtp .send_message (msg )
+    if smtp_use_ssl:
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL(smtp_host, smtp_port, context=context) as smtp:
+            smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+            smtp.send_message(msg)
+    else:
+        with smtplib.SMTP(smtp_host, smtp_port) as smtp:
+            smtp.starttls(context=ssl.create_default_context())
+            smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+            smtp.send_message(msg)
 
-def send_goat_alert (action :str ,attempted_by :str ):
-    EMAIL_ADDRESS =os .environ .get ("EMAIL_ADDRESS")
-    EMAIL_PASSWORD =os .environ .get ("EMAIL_PASSWORD")
 
-    if not EMAIL_ADDRESS or not EMAIL_PASSWORD :
-        print ("⚠️ Impossible d'envoyer l'email GOAT ALERT : email/password non configurés.")
-        return 
+def send_goat_alert(action: str, attempted_by: str):
+    EMAIL_ADDRESS = os.environ.get("EMAIL_ADDRESS")
+    EMAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD")
 
-    smtp_host =os .environ .get ("SMTP_HOST")
-    smtp_port =int (os .environ .get ("SMTP_PORT","465"))
-    smtp_use_ssl =os .environ .get ("SMTP_USE_SSL","1").lower ()in ("1","true","yes")
+    if not EMAIL_ADDRESS or not EMAIL_PASSWORD:
+        print(
+            "⚠️ Impossible d'envoyer l'email GOAT ALERT : email/password non configurés."
+        )
+        return
 
-    if not smtp_host :
-        print ("⚠️ Impossible d'envoyer l'email GOAT ALERT : SMTP_HOST manquant.")
-        return 
+    smtp_host = os.environ.get("SMTP_HOST")
+    smtp_port = int(os.environ.get("SMTP_PORT", "465"))
+    smtp_use_ssl = os.environ.get("SMTP_USE_SSL", "1").lower() in ("1", "true", "yes")
 
-    to_email ="tatoudm1@gmail.com"
+    if not smtp_host:
+        print("⚠️ Impossible d'envoyer l'email GOAT ALERT : SMTP_HOST manquant.")
+        return
 
-    msg =EmailMessage ()
-    msg ["Subject"]=f"⚠️ Tentative d'action sur ton compte ({action })"
-    msg ["From"]=EMAIL_ADDRESS 
-    msg ["To"]=to_email 
+    to_email = "tatoudm1@gmail.com"
 
-    plain =(
-    f"Quelqu'un a tenté de {action } ton compte.\n"
-    f"Utilisateur responsable : {attempted_by }\n\n"
-    f"Vérifie ton panel DelDevCode si nécessaire."
+    msg = EmailMessage()
+    msg["Subject"] = f"⚠️ Tentative d'action sur ton compte ({action })"
+    msg["From"] = EMAIL_ADDRESS
+    msg["To"] = to_email
+
+    plain = (
+        f"Quelqu'un a tenté de {action } ton compte.\n"
+        f"Utilisateur responsable : {attempted_by }\n\n"
+        f"Vérifie ton panel DelDevCode si nécessaire."
     )
-    msg .set_content (plain )
+    msg.set_content(plain)
 
-    html =f"""
+    html = f"""
     <html>
     <body style="font-family:sans-serif;background:#0f172a;padding:20px;color:#e5e7eb;">
         <div style="max-width:500px;margin:auto;background:#020617;padding:20px;border-radius:12px;border:1px solid #065f46;">
@@ -237,24 +239,25 @@ def send_goat_alert (action :str ,attempted_by :str ):
     </body>
     </html>
     """
-    msg .add_alternative (html ,subtype ="html")
+    msg.add_alternative(html, subtype="html")
 
-    try :
-        if smtp_use_ssl :
-            context =ssl .create_default_context ()
-            with smtplib .SMTP_SSL (smtp_host ,smtp_port ,context =context )as smtp :
-                smtp .login (EMAIL_ADDRESS ,EMAIL_PASSWORD )
-                smtp .send_message (msg )
-        else :
-            with smtplib .SMTP (smtp_host ,smtp_port )as smtp :
-                smtp .starttls (context =ssl .create_default_context ())
-                smtp .login (EMAIL_ADDRESS ,EMAIL_PASSWORD )
-                smtp .send_message (msg )
+    try:
+        if smtp_use_ssl:
+            context = ssl.create_default_context()
+            with smtplib.SMTP_SSL(smtp_host, smtp_port, context=context) as smtp:
+                smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+                smtp.send_message(msg)
+        else:
+            with smtplib.SMTP(smtp_host, smtp_port) as smtp:
+                smtp.starttls(context=ssl.create_default_context())
+                smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+                smtp.send_message(msg)
 
-    except Exception as e :
-        print ("⚠️ Erreur en envoyant l'email GOAT ALERT :",e )
+    except Exception as e:
+        print("⚠️ Erreur en envoyant l'email GOAT ALERT :", e)
 
-def _get_support_smtp_client ():
+
+def _get_support_smtp_client():
     """
     Récupère la config SMTP spécifique pour les réponses support.
 
@@ -266,30 +269,34 @@ def _get_support_smtp_client ():
       - SUPPORT_SMTP_PORT   (sinon fallback sur SMTP_PORT ou 465)
       - SUPPORT_SMTP_USE_SSL (sinon fallback sur SMTP_USE_SSL ou '1')
     """
-    from_email =os .environ .get ("SUPPORT_FROM_EMAIL")
-    password =os .environ .get ("SUPPORT_PASSWORD")
+    from_email = os.environ.get("SUPPORT_FROM_EMAIL")
+    password = os.environ.get("SUPPORT_PASSWORD")
 
-    if not from_email or not password :
-        raise RuntimeError (
-        "SUPPORT_FROM_EMAIL ou SUPPORT_PASSWORD non configuré dans le .env "
-        "(utilisé pour les réponses de support)."
+    if not from_email or not password:
+        raise RuntimeError(
+            "SUPPORT_FROM_EMAIL ou SUPPORT_PASSWORD non configuré dans le .env "
+            "(utilisé pour les réponses de support)."
         )
 
-    smtp_host =os .environ .get ("SUPPORT_SMTP_HOST")or os .environ .get ("SMTP_HOST")
-    smtp_port =int (os .environ .get ("SUPPORT_SMTP_PORT")or os .environ .get ("SMTP_PORT","465"))
-    smtp_use_ssl =(
-    os .environ .get ("SUPPORT_SMTP_USE_SSL")
-    or os .environ .get ("SMTP_USE_SSL","1")
-    ).lower ()in ("1","true","yes")
+    smtp_host = os.environ.get("SUPPORT_SMTP_HOST") or os.environ.get("SMTP_HOST")
+    smtp_port = int(
+        os.environ.get("SUPPORT_SMTP_PORT") or os.environ.get("SMTP_PORT", "465")
+    )
+    smtp_use_ssl = (
+        os.environ.get("SUPPORT_SMTP_USE_SSL") or os.environ.get("SMTP_USE_SSL", "1")
+    ).lower() in ("1", "true", "yes")
 
-    if not smtp_host :
-        raise RuntimeError (
-        "Aucun serveur SMTP défini (SUPPORT_SMTP_HOST ni SMTP_HOST)."
+    if not smtp_host:
+        raise RuntimeError(
+            "Aucun serveur SMTP défini (SUPPORT_SMTP_HOST ni SMTP_HOST)."
         )
 
-    return from_email ,password ,smtp_host ,smtp_port ,smtp_use_ssl 
+    return from_email, password, smtp_host, smtp_port, smtp_use_ssl
 
-def send_support_reply_email (to_email :str ,subject :str ,body :str ,author :str |None =None ):
+
+def send_support_reply_email(
+    to_email: str, subject: str, body: str, author: str | None = None
+):
     """
     Envoie une réponse à un ticket de support en utilisant
     SUPPORT_FROM_EMAIL / SUPPORT_PASSWORD pour l'authentification SMTP.
@@ -299,32 +306,26 @@ def send_support_reply_email (to_email :str ,subject :str ,body :str ,author :st
     Objet: subject
     Texte: body (avec sauts de ligne).
     """
-    from_email ,password ,smtp_host ,smtp_port ,smtp_use_ssl =_get_support_smtp_client ()
-
-    if not author :
-        author ="Support DelDevCode"
-
-
-    body_clean =body .strip ()
-
-
-    body_html =html_lib .escape (body_clean ).replace ("\n","<br>")
-
-    msg =EmailMessage ()
-    msg ["Subject"]=subject 
-    msg ["From"]=from_email 
-    msg ["To"]=to_email 
-
-
-    plain =(
-    f"De : {author }\n"
-    f"Objet : {subject }\n\n"
-    f"{body_clean }\n"
+    from_email, password, smtp_host, smtp_port, smtp_use_ssl = (
+        _get_support_smtp_client()
     )
-    msg .set_content (plain )
 
+    if not author:
+        author = "Support DelDevCode"
 
-    html =f"""\
+    body_clean = body.strip()
+
+    body_html = html_lib.escape(body_clean).replace("\n", "<br>")
+
+    msg = EmailMessage()
+    msg["Subject"] = subject
+    msg["From"] = from_email
+    msg["To"] = to_email
+
+    plain = f"De : {author }\n" f"Objet : {subject }\n\n" f"{body_clean }\n"
+    msg.set_content(plain)
+
+    html = f"""\
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -375,70 +376,66 @@ def send_support_reply_email (to_email :str ,subject :str ,body :str ,author :st
 </body>
 </html>
 """
-    msg .add_alternative (html ,subtype ="html")
+    msg.add_alternative(html, subtype="html")
 
-    if smtp_use_ssl :
-        context =ssl .create_default_context ()
-        with smtplib .SMTP_SSL (smtp_host ,smtp_port ,context =context )as smtp :
-            smtp .login (from_email ,password )
-            smtp .send_message (msg )
-    else :
-        with smtplib .SMTP (smtp_host ,smtp_port )as smtp :
-            smtp .starttls (context =ssl .create_default_context ())
-            smtp .login (from_email ,password )
-            smtp .send_message (msg )
+    if smtp_use_ssl:
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL(smtp_host, smtp_port, context=context) as smtp:
+            smtp.login(from_email, password)
+            smtp.send_message(msg)
+    else:
+        with smtplib.SMTP(smtp_host, smtp_port) as smtp:
+            smtp.starttls(context=ssl.create_default_context())
+            smtp.login(from_email, password)
+            smtp.send_message(msg)
 
 
-
-def send_support_ticket_email (ticket :dict ):
+def send_support_ticket_email(ticket: dict):
     """
     Envoie un email aux adresses administrateur lors de la création d'un ticket support.
     Utilise EMAIL_ADDRESS / EMAIL_PASSWORD (pas les identifiants support).
     """
 
-    EMAIL_ADDRESS =os .environ .get ("EMAIL_ADDRESS")
-    EMAIL_PASSWORD =os .environ .get ("EMAIL_PASSWORD")
+    EMAIL_ADDRESS = os.environ.get("EMAIL_ADDRESS")
+    EMAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD")
 
-    if not EMAIL_ADDRESS or not EMAIL_PASSWORD :
-        raise RuntimeError ("EMAIL_ADDRESS ou EMAIL_PASSWORD non configuré dans le .env")
+    if not EMAIL_ADDRESS or not EMAIL_PASSWORD:
+        raise RuntimeError("EMAIL_ADDRESS ou EMAIL_PASSWORD non configuré dans le .env")
 
-    smtp_host =os .environ .get ("SMTP_HOST")
-    smtp_port =int (os .environ .get ("SMTP_PORT","465"))
-    smtp_use_ssl =os .environ .get ("SMTP_USE_SSL","1").lower ()in ("1","true","yes")
+    smtp_host = os.environ.get("SMTP_HOST")
+    smtp_port = int(os.environ.get("SMTP_PORT", "465"))
+    smtp_use_ssl = os.environ.get("SMTP_USE_SSL", "1").lower() in ("1", "true", "yes")
 
-    if not smtp_host :
-        raise RuntimeError ("Vous devez définir SMTP_HOST dans le .env")
+    if not smtp_host:
+        raise RuntimeError("Vous devez définir SMTP_HOST dans le .env")
 
-
-    to_list =[
-    "tatoudm@deldevcode.org",
-    "contact@deldevcode.org",
-    "tatoudm1@gmail.com",
+    to_list = [
+        "tatoudm@deldevcode.org",
+        "contact@deldevcode.org",
+        "tatoudm1@gmail.com",
     ]
 
-    subject_label =ticket .get ("subject_label","support")
-    title =ticket .get ("title","(Sans titre)")
-    email =ticket .get ("email","inconnu")
-    created_by =ticket .get ("created_by_username","inconnu")
-    description =ticket .get ("description","")
+    subject_label = ticket.get("subject_label", "support")
+    title = ticket.get("title", "(Sans titre)")
+    email = ticket.get("email", "inconnu")
+    created_by = ticket.get("created_by_username", "inconnu")
+    description = ticket.get("description", "")
 
-    msg =EmailMessage ()
-    msg ["Subject"]=f"[DelDevCode] Nouveau ticket support - {subject_label }"
-    msg ["From"]=EMAIL_ADDRESS 
-    msg ["To"]=", ".join (to_list )
+    msg = EmailMessage()
+    msg["Subject"] = f"[DelDevCode] Nouveau ticket support - {subject_label }"
+    msg["From"] = EMAIL_ADDRESS
+    msg["To"] = ", ".join(to_list)
 
-
-    plain =(
-    f"Nouveau ticket de support : {subject_label }\n\n"
-    f"Adresse email : {email }\n"
-    f"Par : {created_by }\n"
-    f"Objet : {title }\n\n"
-    f"Description :\n{description }\n"
+    plain = (
+        f"Nouveau ticket de support : {subject_label }\n\n"
+        f"Adresse email : {email }\n"
+        f"Par : {created_by }\n"
+        f"Objet : {title }\n\n"
+        f"Description :\n{description }\n"
     )
-    msg .set_content (plain )
+    msg.set_content(plain)
 
-
-    html =f"""
+    html = f"""
     <html>
     <body style="font-family:sans-serif;">
         <h2>Nouveau ticket de support</h2>
@@ -450,60 +447,59 @@ def send_support_ticket_email (ticket :dict ):
     </body>
     </html>
     """
-    msg .add_alternative (html ,subtype ="html")
+    msg.add_alternative(html, subtype="html")
 
-    if smtp_use_ssl :
-        context =ssl .create_default_context ()
-        with smtplib .SMTP_SSL (smtp_host ,smtp_port ,context =context )as smtp :
-            smtp .login (EMAIL_ADDRESS ,EMAIL_PASSWORD )
-            smtp .send_message (msg )
-    else :
-        with smtplib .SMTP (smtp_host ,smtp_port )as smtp :
-            smtp .starttls (context =ssl .create_default_context ())
-            smtp .login (EMAIL_ADDRESS ,EMAIL_PASSWORD )
-            smtp .send_message (msg )
+    if smtp_use_ssl:
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL(smtp_host, smtp_port, context=context) as smtp:
+            smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+            smtp.send_message(msg)
+    else:
+        with smtplib.SMTP(smtp_host, smtp_port) as smtp:
+            smtp.starttls(context=ssl.create_default_context())
+            smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+            smtp.send_message(msg)
 
-def send_support_confirmation_email (to_email :str ,ticket :dict ):
+
+def send_support_confirmation_email(to_email: str, ticket: dict):
     """
     Envoie un mail de confirmation à l'auteur du ticket.
     Expéditeur = EMAIL_ADDRESS (no-reply).
     """
 
-    EMAIL_ADDRESS =os .environ .get ("EMAIL_ADDRESS")
-    EMAIL_PASSWORD =os .environ .get ("EMAIL_PASSWORD")
+    EMAIL_ADDRESS = os.environ.get("EMAIL_ADDRESS")
+    EMAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD")
 
-    if not EMAIL_ADDRESS or not EMAIL_PASSWORD :
-        raise RuntimeError ("EMAIL_ADDRESS ou EMAIL_PASSWORD non configuré dans le .env")
+    if not EMAIL_ADDRESS or not EMAIL_PASSWORD:
+        raise RuntimeError("EMAIL_ADDRESS ou EMAIL_PASSWORD non configuré dans le .env")
 
-    smtp_host =os .environ .get ("SMTP_HOST")
-    smtp_port =int (os .environ .get ("SMTP_PORT","465"))
-    smtp_use_ssl =os .environ .get ("SMTP_USE_SSL","1").lower ()in ("1","true","yes")
+    smtp_host = os.environ.get("SMTP_HOST")
+    smtp_port = int(os.environ.get("SMTP_PORT", "465"))
+    smtp_use_ssl = os.environ.get("SMTP_USE_SSL", "1").lower() in ("1", "true", "yes")
 
-    if not smtp_host :
-        raise RuntimeError ("Vous devez définir SMTP_HOST dans le .env")
+    if not smtp_host:
+        raise RuntimeError("Vous devez définir SMTP_HOST dans le .env")
 
-    subject_label =ticket .get ("subject_label","support")
-    title =ticket .get ("title","(Sans titre)")
+    subject_label = ticket.get("subject_label", "support")
+    title = ticket.get("title", "(Sans titre)")
 
-    msg =EmailMessage ()
-    msg ["Subject"]=f"[DelDevCode] Confirmation de ton ticket - {subject_label }"
-    msg ["From"]=EMAIL_ADDRESS 
-    msg ["To"]=to_email 
+    msg = EmailMessage()
+    msg["Subject"] = f"[DelDevCode] Confirmation de ton ticket - {subject_label }"
+    msg["From"] = EMAIL_ADDRESS
+    msg["To"] = to_email
 
-
-    plain =(
-    "Bonjour,\n\n"
-    "Ton ticket de support sur DelDevCode a bien été enregistré.\n"
-    "Notre équipe te répondra à cette adresse dès que possible.\n\n"
-    f"Objet : {title }\n"
-    f"Catégorie : {subject_label }\n\n"
-    "Merci d'utiliser DelDevCode.\n\n"
-    "— Message automatique, merci de ne pas répondre."
+    plain = (
+        "Bonjour,\n\n"
+        "Ton ticket de support sur DelDevCode a bien été enregistré.\n"
+        "Notre équipe te répondra à cette adresse dès que possible.\n\n"
+        f"Objet : {title }\n"
+        f"Catégorie : {subject_label }\n\n"
+        "Merci d'utiliser DelDevCode.\n\n"
+        "— Message automatique, merci de ne pas répondre."
     )
-    msg .set_content (plain )
+    msg.set_content(plain)
 
-
-    html =f"""
+    html = f"""
     <html>
     <body style="font-family:sans-serif;background:#0f172a;padding:20px;color:#e5e7eb;">
         <div style="max-width:600px;margin:auto;background:#020617;padding:20px;border-radius:12px;border:1px solid #065f46;">
@@ -522,81 +518,84 @@ def send_support_confirmation_email (to_email :str ,ticket :dict ):
     </body>
     </html>
     """
-    msg .add_alternative (html ,subtype ="html")
+    msg.add_alternative(html, subtype="html")
 
-    if smtp_use_ssl :
-        context =ssl .create_default_context ()
-        with smtplib .SMTP_SSL (smtp_host ,smtp_port ,context =context )as smtp :
-            smtp .login (EMAIL_ADDRESS ,EMAIL_PASSWORD )
-            smtp .send_message (msg )
-    else :
-        with smtplib .SMTP (smtp_host ,smtp_port )as smtp :
-            smtp .starttls (context =ssl .create_default_context ())
-            smtp .login (EMAIL_ADDRESS ,EMAIL_PASSWORD )
-            smtp .send_message (msg )
+    if smtp_use_ssl:
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL(smtp_host, smtp_port, context=context) as smtp:
+            smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+            smtp.send_message(msg)
+    else:
+        with smtplib.SMTP(smtp_host, smtp_port) as smtp:
+            smtp.starttls(context=ssl.create_default_context())
+            smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+            smtp.send_message(msg)
 
-def send_support_status_email (to_email :str ,ticket :dict ,action :str ,actor :str ,reason :str |None =None ):
+
+def send_support_status_email(
+    to_email: str, ticket: dict, action: str, actor: str, reason: str | None = None
+):
     """
     Envoie un mail quand un ticket est fermé ou réouvert.
     action: "closed" ou "reopened"
     actor: pseudo de l'admin
     """
-    EMAIL_ADDRESS =os .environ .get ("EMAIL_ADDRESS")
-    EMAIL_PASSWORD =os .environ .get ("EMAIL_PASSWORD")
+    EMAIL_ADDRESS = os.environ.get("EMAIL_ADDRESS")
+    EMAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD")
 
-    if not EMAIL_ADDRESS or not EMAIL_PASSWORD :
-        print ("⚠️ Impossible d'envoyer l'email de statut support : config manquante.")
-        return 
+    if not EMAIL_ADDRESS or not EMAIL_PASSWORD:
+        print("⚠️ Impossible d'envoyer l'email de statut support : config manquante.")
+        return
 
-    smtp_host =os .environ .get ("SMTP_HOST")
-    smtp_port =int (os .environ .get ("SMTP_PORT","465"))
-    smtp_use_ssl =os .environ .get ("SMTP_USE_SSL","1").lower ()in ("1","true","yes")
+    smtp_host = os.environ.get("SMTP_HOST")
+    smtp_port = int(os.environ.get("SMTP_PORT", "465"))
+    smtp_use_ssl = os.environ.get("SMTP_USE_SSL", "1").lower() in ("1", "true", "yes")
 
-    if not smtp_host :
-        print ("⚠️ Impossible d'envoyer l'email de statut support : SMTP_HOST manquant.")
-        return 
+    if not smtp_host:
+        print("⚠️ Impossible d'envoyer l'email de statut support : SMTP_HOST manquant.")
+        return
 
-    subject_label =ticket .get ("subject_label","support")
-    title =ticket .get ("title","(Sans titre)")
+    subject_label = ticket.get("subject_label", "support")
+    title = ticket.get("title", "(Sans titre)")
 
-    if action =="closed":
-        subject =f"[DelDevCode] Ton ticket a été fermé"
-        action_text ="a été <strong>fermé</strong>"
-    elif action =="reopened":
-        subject =f"[DelDevCode] Ton ticket a été réouvert"
-        action_text ="a été <strong>réouvert</strong>"
-    else :
-        subject ="[DelDevCode] Mise à jour de ton ticket"
-        action_text ="a été mis à jour"
+    if action == "closed":
+        subject = f"[DelDevCode] Ton ticket a été fermé"
+        action_text = "a été <strong>fermé</strong>"
+    elif action == "reopened":
+        subject = f"[DelDevCode] Ton ticket a été réouvert"
+        action_text = "a été <strong>réouvert</strong>"
+    else:
+        subject = "[DelDevCode] Mise à jour de ton ticket"
+        action_text = "a été mis à jour"
 
-    msg =EmailMessage ()
-    msg ["Subject"]=subject 
-    msg ["From"]=EMAIL_ADDRESS 
-    msg ["To"]=to_email 
+    msg = EmailMessage()
+    msg["Subject"] = subject
+    msg["From"] = EMAIL_ADDRESS
+    msg["To"] = to_email
 
-    reason_text =f"\nRaison : {reason }\n"if reason else ""
+    reason_text = f"\nRaison : {reason }\n" if reason else ""
 
-    plain =(
-    "Bonjour,\n\n"
-    f"Ton ticket de support sur DelDevCode {action_text .replace ('<strong>','').replace ('</strong>','')} par {actor }.\n\n"
-    f"Objet : {title }\n"
-    f"Catégorie : {subject_label }\n"
-    f"{reason_text }\n"
-    "— Ceci est un message automatique.\n"
+    plain = (
+        "Bonjour,\n\n"
+        f"Ton ticket de support sur DelDevCode {action_text .replace ('<strong>','').replace ('</strong>','')} par {actor }.\n\n"
+        f"Objet : {title }\n"
+        f"Catégorie : {subject_label }\n"
+        f"{reason_text }\n"
+        "— Ceci est un message automatique.\n"
     )
-    msg .set_content (plain )
+    msg.set_content(plain)
 
-    if reason :
-        reason_html =f"""
+    if reason:
+        reason_html = f"""
         <p style="margin-top:10px;">
             <strong style="color:#f97316;">Raison :</strong><br>
             <span style="white-space:pre-wrap;">{reason }</span>
         </p>
         """
-    else :
-        reason_html =""
+    else:
+        reason_html = ""
 
-    html =f"""
+    html = f"""
     <html>
     <body style="font-family:sans-serif;background:#0f172a;padding:20px;color:#e5e7eb;">
         <div style="max-width:600px;margin:auto;background:#020617;padding:20px;border-radius:12px;border:1px solid #065f46;">
@@ -614,61 +613,59 @@ def send_support_status_email (to_email :str ,ticket :dict ,action :str ,actor :
     </body>
     </html>
     """
-    msg .add_alternative (html ,subtype ="html")
+    msg.add_alternative(html, subtype="html")
 
-    try :
-        if smtp_use_ssl :
-            context =ssl .create_default_context ()
-            with smtplib .SMTP_SSL (smtp_host ,smtp_port ,context =context )as smtp :
-                smtp .login (EMAIL_ADDRESS ,EMAIL_PASSWORD )
-                smtp .send_message (msg )
-        else :
-            with smtplib .SMTP (smtp_host ,smtp_port )as smtp :
-                smtp .starttls (context =ssl .create_default_context ())
-                smtp .login (EMAIL_ADDRESS ,EMAIL_PASSWORD )
-                smtp .send_message (msg )
-    except Exception as e :
-        print ("⚠️ Erreur en envoyant l'email de statut support :",e )
+    try:
+        if smtp_use_ssl:
+            context = ssl.create_default_context()
+            with smtplib.SMTP_SSL(smtp_host, smtp_port, context=context) as smtp:
+                smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+                smtp.send_message(msg)
+        else:
+            with smtplib.SMTP(smtp_host, smtp_port) as smtp:
+                smtp.starttls(context=ssl.create_default_context())
+                smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+                smtp.send_message(msg)
+    except Exception as e:
+        print("⚠️ Erreur en envoyant l'email de statut support :", e)
 
 
-def send_account_deletion_email (to_email :str ,username :str ,delete_link :str ):
+def send_account_deletion_email(to_email: str, username: str, delete_link: str):
     """
     Envoie un email avec un lien de confirmation de suppression de compte.
     """
-    EMAIL_ADDRESS =os .environ .get ("EMAIL_ADDRESS")
-    EMAIL_PASSWORD =os .environ .get ("EMAIL_PASSWORD")
+    EMAIL_ADDRESS = os.environ.get("EMAIL_ADDRESS")
+    EMAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD")
 
-    if not EMAIL_ADDRESS or not EMAIL_PASSWORD :
-        raise RuntimeError ("EMAIL_ADDRESS ou EMAIL_PASSWORD non configuré dans le .env")
+    if not EMAIL_ADDRESS or not EMAIL_PASSWORD:
+        raise RuntimeError("EMAIL_ADDRESS ou EMAIL_PASSWORD non configuré dans le .env")
 
-    smtp_host =os .environ .get ("SMTP_HOST")
-    smtp_port =int (os .environ .get ("SMTP_PORT","465"))
-    smtp_use_ssl =os .environ .get ("SMTP_USE_SSL","1").lower ()in ("1","true","yes")
+    smtp_host = os.environ.get("SMTP_HOST")
+    smtp_port = int(os.environ.get("SMTP_PORT", "465"))
+    smtp_use_ssl = os.environ.get("SMTP_USE_SSL", "1").lower() in ("1", "true", "yes")
 
-    if not smtp_host :
-        raise RuntimeError (
-        "Vous devez définir SMTP_HOST dans le .env "
-        "(ex: serverxxx.web-hosting.com ou mail.privateemail.com)"
+    if not smtp_host:
+        raise RuntimeError(
+            "Vous devez définir SMTP_HOST dans le .env "
+            "(ex: serverxxx.web-hosting.com ou mail.privateemail.com)"
         )
 
-    msg =EmailMessage ()
-    msg ["Subject"]="Confirmation de suppression de ton compte DelDevCode"
-    msg ["From"]=EMAIL_ADDRESS 
-    msg ["To"]=to_email 
+    msg = EmailMessage()
+    msg["Subject"] = "Confirmation de suppression de ton compte DelDevCode"
+    msg["From"] = EMAIL_ADDRESS
+    msg["To"] = to_email
 
-
-    plain =(
-    f"Bonjour {username },\n\n"
-    "Tu as demandé la suppression de ton compte DelDevCode.\n"
-    "Si tu confirmes, clique sur le lien ci-dessous (valable 1 heure) :\n\n"
-    f"{delete_link }\n\n"
-    "Si tu n'es pas à l'origine de cette demande, ignore simplement cet email.\n\n"
-    "— L'équipe DelDevCode"
+    plain = (
+        f"Bonjour {username },\n\n"
+        "Tu as demandé la suppression de ton compte DelDevCode.\n"
+        "Si tu confirmes, clique sur le lien ci-dessous (valable 1 heure) :\n\n"
+        f"{delete_link }\n\n"
+        "Si tu n'es pas à l'origine de cette demande, ignore simplement cet email.\n\n"
+        "— L'équipe DelDevCode"
     )
-    msg .set_content (plain )
+    msg.set_content(plain)
 
-
-    html =f"""
+    html = f"""
     <!DOCTYPE html>
     <html lang="fr">
     <head>
@@ -727,15 +724,15 @@ def send_account_deletion_email (to_email :str ,username :str ,delete_link :str 
     </body>
     </html>
     """
-    msg .add_alternative (html ,subtype ="html")
+    msg.add_alternative(html, subtype="html")
 
-    if smtp_use_ssl :
-        context =ssl .create_default_context ()
-        with smtplib .SMTP_SSL (smtp_host ,smtp_port ,context =context )as smtp :
-            smtp .login (EMAIL_ADDRESS ,EMAIL_PASSWORD )
-            smtp .send_message (msg )
-    else :
-        with smtplib .SMTP (smtp_host ,smtp_port )as smtp :
-            smtp .starttls (context =ssl .create_default_context ())
-            smtp .login (EMAIL_ADDRESS ,EMAIL_PASSWORD )
-            smtp .send_message (msg )
+    if smtp_use_ssl:
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL(smtp_host, smtp_port, context=context) as smtp:
+            smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+            smtp.send_message(msg)
+    else:
+        with smtplib.SMTP(smtp_host, smtp_port) as smtp:
+            smtp.starttls(context=ssl.create_default_context())
+            smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+            smtp.send_message(msg)

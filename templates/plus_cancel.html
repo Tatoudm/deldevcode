@@ -1,27 +1,36 @@
-{% extends "base.html" %}
-{% block title %}DDC Plus - Annulé{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}DDC Plus - Annulé{% endblock %} {%
+block content %}
 <div class="max-w-xl mx-auto mt-6">
-    <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6 text-center space-y-3">
-        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-slate-100 text-slate-500 text-2xl">
-            🧊
-        </div>
-        <h1 class="text-xl md:text-2xl font-semibold text-slate-900">
-            Paiement annulé
-        </h1>
-        <p class="text-sm md:text-base text-slate-700">
-            Tu as annulé le paiement ou fermé la fenêtre Stripe. Ton compte reste sur ton plan actuel.
-        </p>
-
-        <div class="flex flex-col md:flex-row gap-3 justify-center pt-2">
-            <a href="{{ url_for('billing.plus_page') }}" class="inline-flex justify-center items-center px-4 py-2 rounded-md bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 transition">
-                Revenir aux offres
-            </a>
-            <a href="{{ url_for('index') if false else '/' }}" class="inline-flex justify-center items-center px-4 py-2 rounded-md border border-slate-300 text-slate-800 text-sm font-medium hover:bg-slate-50 transition">
-                Retourner à l'accueil
-            </a>
-        </div>
+  <div
+    class="bg-white border border-slate-200 rounded-xl shadow-sm p-6 text-center space-y-3"
+  >
+    <div
+      class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-slate-100 text-slate-500 text-2xl"
+    >
+      🧊
     </div>
+    <h1 class="text-xl md:text-2xl font-semibold text-slate-900">
+      Paiement annulé
+    </h1>
+    <p class="text-sm md:text-base text-slate-700">
+      Tu as annulé le paiement ou fermé la fenêtre Stripe. Ton compte reste sur
+      ton plan actuel.
+    </p>
+
+    <div class="flex flex-col md:flex-row gap-3 justify-center pt-2">
+      <a
+        href="{{ url_for('billing.plus_page') }}"
+        class="inline-flex justify-center items-center px-4 py-2 rounded-md bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 transition"
+      >
+        Revenir aux offres
+      </a>
+      <a
+        href="{{ url_for('index') if false else '/' }}"
+        class="inline-flex justify-center items-center px-4 py-2 rounded-md border border-slate-300 text-slate-800 text-sm font-medium hover:bg-slate-50 transition"
+      >
+        Retourner à l'accueil
+      </a>
+    </div>
+  </div>
 </div>
 {% endblock %}

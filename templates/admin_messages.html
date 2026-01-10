@@ -1,100 +1,107 @@
-{% extends "base.html" %}
-
-{% block title %}DDC Admin panel{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}DDC Admin panel{% endblock %} {%
+block content %}
 
 <div class="max-w-5xl mx-auto mt-8 space-y-6">
+  {% if erreur %}
+  <div class="mb-2">
+    <div
+      class="bg-red-50 text-red-800 border border-red-200 px-4 py-3 rounded-xl shadow-sm flex items-start gap-3"
+    >
+      <span class="text-red-500 text-xl font-bold leading-none mt-0.5">!</span>
+      <p class="text-sm md:text-base">{{ erreur }}</p>
+    </div>
+  </div>
+  {% endif %}
 
-    {% if erreur %}
-        <div class="mb-2">
-            <div class="bg-red-50 text-red-800 border border-red-200 px-4 py-3 rounded-xl shadow-sm flex items-start gap-3">
-                <span class="text-red-500 text-xl font-bold leading-none mt-0.5">!</span>
-                <p class="text-sm md:text-base">
-                    {{ erreur }}
-                </p>
-            </div>
+  <section>
+    <p class="text-xs uppercase tracking-wide text-emerald-600 font-semibold">
+      Panel administrateur
+    </p>
+    <h1 class="text-2xl md:text-3xl font-bold text-slate-900">
+      Messages du chat {% if author %}<span class="text-sm text-slate-500"
+        >· {{ author }}</span
+      >{% endif %}
+    </h1>
+    <p class="text-sm text-slate-600">
+      Tu peux supprimer des messages individuellement. Les messages plus vieux
+      d’1h sont déjà supprimés automatiquement.
+    </p>
+    <a
+      href="{{ url_for('admin.admin_panel') }}"
+      class="text-xs text-sky-700 hover:underline mt-2 inline-block"
+    >
+      ← Retour au panel utilisateurs
+    </a>
+  </section>
+
+  <section
+    class="bg-white border border-slate-200 rounded-2xl shadow-sm max-h-[600px] overflow-y-auto"
+  >
+    <ul id="messages-list" class="divide-y divide-slate-100">
+      {% if messages|length == 0 %}
+      <li class="px-4 py-3 text-sm text-slate-500">
+        Aucun message trouvé pour ce filtre.
+      </li>
+      {% else %} {% for m in messages %}
+      <li class="px-4 py-3 flex items-start gap-3">
+        <div class="flex-1">
+          <div class="flex items-center gap-2 text-xs text-slate-500">
+            <span class="font-semibold text-slate-800">{{ m.author }}</span>
+            <span>·</span>
+            <span>{{ m.time }}</span>
+            <span>·</span>
+            <span class="text-slate-400">#{{ m.channel }}</span>
+          </div>
+          <p class="text-sm text-slate-800 break-words">{{ m.content }}</p>
         </div>
-    {% endif %}
-
-    <section>
-        <p class="text-xs uppercase tracking-wide text-emerald-600 font-semibold">
-            Panel administrateur
-        </p>
-        <h1 class="text-2xl md:text-3xl font-bold text-slate-900">
-            Messages du chat
-            {% if author %}<span class="text-sm text-slate-500">· {{ author }}</span>{% endif %}
-        </h1>
-        <p class="text-sm text-slate-600">
-            Tu peux supprimer des messages individuellement. Les messages plus vieux d’1h
-            sont déjà supprimés automatiquement.
-        </p>
-        <a href="{{ url_for('admin.admin_panel') }}" class="text-xs text-sky-700 hover:underline mt-2 inline-block">
-            ← Retour au panel utilisateurs
-        </a>
-    </section>
-
-    <section class="bg-white border border-slate-200 rounded-2xl shadow-sm max-h-[600px] overflow-y-auto">
-        <ul id="messages-list" class="divide-y divide-slate-100">
-            {% if messages|length == 0 %}
-                <li class="px-4 py-3 text-sm text-slate-500">
-                    Aucun message trouvé pour ce filtre.
-                </li>
-            {% else %}
-                {% for m in messages %}
-                <li class="px-4 py-3 flex items-start gap-3">
-                    <div class="flex-1">
-                        <div class="flex items-center gap-2 text-xs text-slate-500">
-                            <span class="font-semibold text-slate-800">{{ m.author }}</span>
-                            <span>·</span>
-                            <span>{{ m.time }}</span>
-                            <span>·</span>
-                            <span class="text-slate-400">#{{ m.channel }}</span>
-                        </div>
-                        <p class="text-sm text-slate-800 break-words">
-                            {{ m.content }}
-                        </p>
-                    </div>
-                    <form method="POST" action="{{ url_for('admin.admin_delete_message') }}">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <input type="hidden" name="message_id" value="{{ m.id }}">
-                        <input type="hidden" name="redirect_to" value="{{ request.path }}?author={{ author }}">
-                        <button type="submit" class="text-xs px-3 py-1 rounded-lg border border-red-500 text-red-600 hover:bg-red-50">
-                            Supprimer
-                        </button>
-                    </form>
-                </li>
-                {% endfor %}
-            {% endif %}
-        </ul>
-    </section>
-
-
+        <form
+          method="POST"
+          action="{{ url_for('admin.admin_delete_message') }}"
+        >
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <input type="hidden" name="message_id" value="{{ m.id }}" />
+          <input
+            type="hidden"
+            name="redirect_to"
+            value="{{ request.path }}?author={{ author }}"
+          />
+          <button
+            type="submit"
+            class="text-xs px-3 py-1 rounded-lg border border-red-500 text-red-600 hover:bg-red-50"
+          >
+            Supprimer
+          </button>
+        </form>
+      </li>
+      {% endfor %} {% endif %}
+    </ul>
+  </section>
 </div>
 
 <script>
-    const authorFilter = "{{ author|e }}";
-    const listEl = document.getElementById("messages-list");
-    const redirectTo = window.location.pathname + window.location.search;
+  const authorFilter = "{{ author|e }}";
+  const listEl = document.getElementById("messages-list");
+  const redirectTo = window.location.pathname + window.location.search;
 
-    function renderAdminMessages(messages) {
-        if (!listEl) return;
+  function renderAdminMessages(messages) {
+    if (!listEl) return;
 
-        if (!messages || messages.length === 0) {
-            listEl.innerHTML = `
+    if (!messages || messages.length === 0) {
+      listEl.innerHTML = `
                 <li class="px-4 py-3 text-sm text-slate-500">
                     Aucun message trouvé pour ce filtre.
                 </li>
             `;
-            return;
-        }
+      return;
+    }
 
-        listEl.innerHTML = "";
+    listEl.innerHTML = "";
 
-        messages.forEach(m => {
-            const li = document.createElement("li");
-            li.className = "px-4 py-3 flex items-start gap-3 border-b border-slate-100 last:border-b-0";
-            li.innerHTML = `
+    messages.forEach((m) => {
+      const li = document.createElement("li");
+      li.className =
+        "px-4 py-3 flex items-start gap-3 border-b border-slate-100 last:border-b-0";
+      li.innerHTML = `
                 <div class="flex-1">
                     <div class="flex items-center gap-2 text-xs text-slate-500">
                         <span class="font-semibold text-slate-800">${m.author}</span>
@@ -117,56 +124,56 @@
                     </button>
                 </form>
             `;
-            listEl.appendChild(li);
-        });
+      listEl.appendChild(li);
+    });
+  }
+
+  const wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
+  const wsUrl = `${wsProtocol}://${window.location.host}/ws/admin/messages`;
+  const adminWs = new WebSocket(wsUrl);
+
+  adminWs.addEventListener("open", () => {
+    console.log("Admin WS connecté:", wsUrl);
+
+    adminWs.send(
+      JSON.stringify({
+        type: "refresh",
+        author: authorFilter || "",
+      }),
+    );
+  });
+
+  adminWs.addEventListener("message", (event) => {
+    const data = JSON.parse(event.data);
+
+    if (data.type === "update") {
+      renderAdminMessages(data.messages || []);
     }
 
-    
+    if (data.type === "error") {
+      console.warn("Erreur WS admin:", data.message);
+      alert(data.message);
+    }
+  });
 
-    const wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
-    const wsUrl = `${wsProtocol}://${window.location.host}/ws/admin/messages`;
-    const adminWs = new WebSocket(wsUrl);
+  adminWs.addEventListener("close", () => {
+    console.log("Admin WS fermé");
+  });
 
-    adminWs.addEventListener("open", () => {
-        console.log("Admin WS connecté:", wsUrl);
-        
-        adminWs.send(JSON.stringify({
-            type: "refresh",
-            author: authorFilter || ""
-        }));
-    });
+  adminWs.addEventListener("error", (err) => {
+    console.error("Erreur WebSocket admin:", err);
+  });
 
-    adminWs.addEventListener("message", (event) => {
-        const data = JSON.parse(event.data);
-
-        if (data.type === "update") {
-            renderAdminMessages(data.messages || []);
-        }
-
-        if (data.type === "error") {
-            console.warn("Erreur WS admin:", data.message);
-            alert(data.message);
-        }
-    });
-
-    adminWs.addEventListener("close", () => {
-        console.log("Admin WS fermé");
-    });
-
-    adminWs.addEventListener("error", (err) => {
-        console.error("Erreur WebSocket admin:", err);
-    });
-
-    
-    setInterval(() => {
-        if (adminWs.readyState === WebSocket.OPEN) {
-            adminWs.send(JSON.stringify({
-                type: "refresh",
-                author: authorFilter || ""
-            }));
-        }
-    }, 5000);
+  setInterval(() => {
+    if (adminWs.readyState === WebSocket.OPEN) {
+      adminWs.send(
+        JSON.stringify({
+          type: "refresh",
+          author: authorFilter || "",
+        }),
+      );
+    }
+  }, 5000);
 </script>
-
 
 {% endblock %}

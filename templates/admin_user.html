@@ -1,397 +1,603 @@
-{% extends "base.html" %}
-{% block title %}DDC · Gestion utilisateur{% endblock %}
-
-{% block content %}
-
-{% set can_manage = (user.nom != 'tatoudm') or (nom == 'tatoudm') %}
+{% extends "base.html" %} {% block title %}DDC · Gestion utilisateur{% endblock
+%} {% block content %} {% set can_manage = (user.nom != 'tatoudm') or (nom ==
+'tatoudm') %}
 
 <div class="max-w-5xl mx-auto mt-8 space-y-6">
-
-    {% if erreur %}
-    <div class="mb-2">
-        <div class="bg-red-50 text-red-800 border border-red-200 px-4 py-3 rounded-xl shadow-sm flex items-start gap-3">
-            <span class="text-red-500 text-xl font-bold leading-none mt-0.5">!</span>
-            <p class="text-sm md:text-base">
-                {{ erreur }}
-            </p>
-        </div>
+  {% if erreur %}
+  <div class="mb-2">
+    <div
+      class="bg-red-50 text-red-800 border border-red-200 px-4 py-3 rounded-xl shadow-sm flex items-start gap-3"
+    >
+      <span class="text-red-500 text-xl font-bold leading-none mt-0.5">!</span>
+      <p class="text-sm md:text-base">{{ erreur }}</p>
     </div>
-    {% endif %}
-
-    {% if temp_login %}
-    <div class="mb-2">
-        <div class="bg-emerald-50 text-emerald-900 border border-emerald-200 px-4 py-3 rounded-xl shadow-sm space-y-1 text-sm">
-            <p class="font-semibold">
-                Accès spécial créé (valide jusqu'à {{ temp_login.expires_at_display }}).
-            </p>
-            <p>Tu peux te connecter à ce compte sans A2F en utilisant :</p>
-            <div class="mt-1 space-y-1 font-mono text-xs bg-white/70 border border-emerald-200 rounded-lg px-3 py-2">
-                <p>Identifiant : <span class="font-semibold break-all">{{ temp_login.username }}</span></p>
-                <p>Mot de passe : <span class="font-semibold break-all">{{ temp_login.password }}</span></p>
-            </div>
-            <p class="text-[11px] text-emerald-700 mt-1">
-                Garde ces identifiants en privé, ils ne seront plus réaffichés.
-            </p>
-        </div>
+  </div>
+  {% endif %} {% if temp_login %}
+  <div class="mb-2">
+    <div
+      class="bg-emerald-50 text-emerald-900 border border-emerald-200 px-4 py-3 rounded-xl shadow-sm space-y-1 text-sm"
+    >
+      <p class="font-semibold">
+        Accès spécial créé (valide jusqu'à {{ temp_login.expires_at_display }}).
+      </p>
+      <p>Tu peux te connecter à ce compte sans A2F en utilisant :</p>
+      <div
+        class="mt-1 space-y-1 font-mono text-xs bg-white/70 border border-emerald-200 rounded-lg px-3 py-2"
+      >
+        <p>
+          Identifiant :
+          <span class="font-semibold break-all">{{ temp_login.username }}</span>
+        </p>
+        <p>
+          Mot de passe :
+          <span class="font-semibold break-all">{{ temp_login.password }}</span>
+        </p>
+      </div>
+      <p class="text-[11px] text-emerald-700 mt-1">
+        Garde ces identifiants en privé, ils ne seront plus réaffichés.
+      </p>
     </div>
-    {% endif %}
+  </div>
+  {% endif %}
 
-    <a href="{{ url_for('admin.admin_panel') }}" class="text-xs text-sky-700 hover:underline inline-flex items-center gap-1">
-        ← Retour à la liste des utilisateurs
-    </a>
+  <a
+    href="{{ url_for('admin.admin_panel') }}"
+    class="text-xs text-sky-700 hover:underline inline-flex items-center gap-1"
+  >
+    ← Retour à la liste des utilisateurs
+  </a>
 
-    <section class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-            <p class="text-xs uppercase tracking-wide text-emerald-600 font-semibold">
-                Gestion d'un utilisateur
-            </p>
-            <h1 class="text-2xl md:text-3xl font-bold text-slate-900 flex items-center gap-2 flex-wrap">
-                {{ user.nom }}
-                {% if user.is_admin %}
-                <span class="text-[11px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-semibold">
-                    ADMIN
-                </span>
-                {% endif %}
-                {% if user.banned %}
-                <span class="text-[11px] px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-semibold">
-                    BANNI
-                </span>
-                {% endif %}
-                {% if user.muted %}
-                <span class="text-[11px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-semibold">
-                    MUTÉ
-                </span>
-                {% endif %}
-                {% if warnings is defined and warnings|length > 0 %}
-                <span class="text-[11px] px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 font-semibold border border-amber-200">
-                    {{ warnings|length }} avertissement{{ 's' if warnings|length > 1 }}
-                </span>
-                {% endif %}
-            </h1>
-            <p class="text-sm text-slate-600 mt-1">
-                Créé le {{ user.created_at_display }} · ID {{ user.id }}
-            </p>
-        </div>
-    </section>
-
-    
-    <section class="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 space-y-4">
-        <h2 class="text-lg font-semibold text-slate-900">
-            Informations du compte
-        </h2>
-
-        {% if not can_manage %}
-            <p class="text-xs text-red-600 mb-2">
-                Tu ne peux pas modifier ce compte. Seul tatoudm peut changer ses informations.
-            </p>
+  <section
+    class="flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+  >
+    <div>
+      <p class="text-xs uppercase tracking-wide text-emerald-600 font-semibold">
+        Gestion d'un utilisateur
+      </p>
+      <h1
+        class="text-2xl md:text-3xl font-bold text-slate-900 flex items-center gap-2 flex-wrap"
+      >
+        {{ user.nom }} {% if user.is_admin %}
+        <span
+          class="text-[11px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-semibold"
+        >
+          ADMIN
+        </span>
+        {% endif %} {% if user.banned %}
+        <span
+          class="text-[11px] px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-semibold"
+        >
+          BANNI
+        </span>
+        {% endif %} {% if user.muted %}
+        <span
+          class="text-[11px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-semibold"
+        >
+          MUTÉ
+        </span>
+        {% endif %} {% if warnings is defined and warnings|length > 0 %}
+        <span
+          class="text-[11px] px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 font-semibold border border-amber-200"
+        >
+          {{ warnings|length }} avertissement{{ 's' if warnings|length > 1 }}
+        </span>
         {% endif %}
+      </h1>
+      <p class="text-sm text-slate-600 mt-1">
+        Créé le {{ user.created_at_display }} · ID {{ user.id }}
+      </p>
+    </div>
+  </section>
 
-        <form method="POST" action="{{ url_for('admin.admin_update_user', user_id=user.id) }}" class="grid gap-3 md:grid-cols-2">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <section
+    class="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 space-y-4"
+  >
+    <h2 class="text-lg font-semibold text-slate-900">Informations du compte</h2>
 
-            <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">
-                    Pseudo
-                </label>
-                <input type="text" name="nom" value="{{ user.nom }}" required {% if not can_manage %}disabled{% endif %} class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-            </div>
+    {% if not can_manage %}
+    <p class="text-xs text-red-600 mb-2">
+      Tu ne peux pas modifier ce compte. Seul tatoudm peut changer ses
+      informations.
+    </p>
+    {% endif %}
 
-            <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">
-                    Email
-                </label>
-                <input type="email" name="email" value="{{ user.email or '' }}" placeholder="email@exemple.com" {% if not can_manage %}disabled{% endif %} class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-            </div>
+    <form
+      method="POST"
+      action="{{ url_for('admin.admin_update_user', user_id=user.id) }}"
+      class="grid gap-3 md:grid-cols-2"
+    >
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 
-            <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">
-                    Prénom
-                </label>
-                <input type="text" name="first_name" value="{{ user.first_name or '' }}" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-slate-700" readonly>
-            </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">
+          Pseudo
+        </label>
+        <input
+          type="text"
+          name="nom"
+          value="{{ user.nom }}"
+          required
+          {%
+          if
+          not
+          can_manage
+          %}disabled{%
+          endif
+          %}
+          class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+        />
+      </div>
 
-            <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">
-                    Nom de famille
-                </label>
-                <input type="text" name="last_name" value="{{ user.last_name or '' }}" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-slate-700" readonly>
-            </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">
+          Email
+        </label>
+        <input
+          type="email"
+          name="email"
+          value="{{ user.email or '' }}"
+          placeholder="email@exemple.com"
+          {%
+          if
+          not
+          can_manage
+          %}disabled{%
+          endif
+          %}
+          class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+        />
+      </div>
 
-            <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">
-                    Nouveau mot de passe
-                </label>
-                <input type="password" name="new_password" placeholder="Laisser vide pour ne pas changer" {% if not can_manage %}disabled{% endif %} class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-                <p class="text-[11px] text-slate-500 mt-1">
-                    Tu peux changer le mot de passe sans connaître l'ancien.
-                </p>
-            </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">
+          Prénom
+        </label>
+        <input
+          type="text"
+          name="first_name"
+          value="{{ user.first_name or '' }}"
+          class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-slate-700"
+          readonly
+        />
+      </div>
 
-            <div class="flex items-center gap-2 mt-5">
-                <input type="checkbox" id="twofa_enabled" name="twofa_enabled" {% if user.twofa_enabled %}checked{% endif %} {% if not can_manage %}disabled{% endif %} class="rounded border-slate-300">
-                <label for="twofa_enabled" class="text-xs text-slate-700">
-                    A2F activée pour ce compte
-                </label>
-            </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">
+          Nom de famille
+        </label>
+        <input
+          type="text"
+          name="last_name"
+          value="{{ user.last_name or '' }}"
+          class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-slate-700"
+          readonly
+        />
+      </div>
 
-            {% if can_manage %}
-            <div class="md:col-span-2 mt-2">
-                <button type="submit" class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-500">
-                    Enregistrer les modifications
-                </button>
-            </div>
-            {% endif %}
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">
+          Nouveau mot de passe
+        </label>
+        <input
+          type="password"
+          name="new_password"
+          placeholder="Laisser vide pour ne pas changer"
+          {%
+          if
+          not
+          can_manage
+          %}disabled{%
+          endif
+          %}
+          class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+        />
+        <p class="text-[11px] text-slate-500 mt-1">
+          Tu peux changer le mot de passe sans connaître l'ancien.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-2 mt-5">
+        <input
+          type="checkbox"
+          id="twofa_enabled"
+          name="twofa_enabled"
+          {%
+          if
+          user.twofa_enabled
+          %}checked{%
+          endif
+          %}
+          {%
+          if
+          not
+          can_manage
+          %}disabled{%
+          endif
+          %}
+          class="rounded border-slate-300"
+        />
+        <label for="twofa_enabled" class="text-xs text-slate-700">
+          A2F activée pour ce compte
+        </label>
+      </div>
+
+      {% if can_manage %}
+      <div class="md:col-span-2 mt-2">
+        <button
+          type="submit"
+          class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-500"
+        >
+          Enregistrer les modifications
+        </button>
+      </div>
+      {% endif %}
+    </form>
+  </section>
+
+  <section class="grid gap-4 md:grid-cols-2">
+    <div
+      class="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 space-y-3"
+    >
+      <h2 class="text-lg font-semibold text-slate-900">Permissions & rôle</h2>
+
+      {% if is_superadmin %}
+      <p class="text-xs text-slate-500">
+        En tant que superadmin, tu peux donner ou retirer le rôle admin.
+      </p>
+      <form
+        method="POST"
+        action="{{ url_for('admin.admin_user_action') }}"
+        class="space-y-2"
+      >
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <input type="hidden" name="username" value="{{ user.nom }}" />
+        <input
+          type="hidden"
+          name="redirect_to"
+          value="{{ url_for('admin.admin_user_detail', user_id=user.id) }}"
+        />
+        {% if user.is_admin %}
+        <input type="hidden" name="action" value="remove_admin" />
+        <button
+          type="submit"
+          class="px-4 py-2 rounded-lg border border-slate-300 text-slate-800 text-sm hover:bg-slate-100"
+        >
+          Retirer le rôle admin
+        </button>
+        {% else %}
+        <input type="hidden" name="action" value="make_admin" />
+        <button
+          type="submit"
+          class="px-4 py-2 rounded-lg border border-emerald-500 text-emerald-700 text-sm hover:bg-emerald-50"
+        >
+          Donner le rôle admin
+        </button>
+        {% endif %}
+      </form>
+
+      {% else %}
+      <p class="text-xs text-slate-500">
+        Seul le superadmin peut modifier les rôles.
+      </p>
+      {% endif %} {% if is_superadmin %}
+      <hr class="border-slate-200" />
+
+      <p class="text-xs text-slate-500">
+        En tant que superadmin, tu peux aussi gérer l'abonnement
+        <span class="font-semibold">Plus</span> de cet utilisateur.
+      </p>
+
+      <form
+        method="POST"
+        action="{{ url_for('admin.admin_user_action') }}"
+        class="space-y-2"
+      >
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <input type="hidden" name="username" value="{{ user.nom }}" />
+        <input
+          type="hidden"
+          name="redirect_to"
+          value="{{ url_for('admin.admin_user_detail', user_id=user.id) }}"
+        />
+
+        {% if user.plan == "plus" %}
+        <input type="hidden" name="action" value="remove_plus" />
+        <button
+          type="submit"
+          class="px-4 py-2 rounded-lg border border-amber-500 text-amber-700 text-sm hover:bg-amber-50"
+        >
+          Retirer Plus
+        </button>
+        {% if user.plus_until_display %}
+        <p class="text-[11px] text-slate-500">
+          Actuellement Plus jusqu'au {{ user.plus_until_display }}.
+        </p>
+        {% else %}
+        <p class="text-[11px] text-slate-500">
+          Abonnement Plus actif (sans date de fin définie).
+        </p>
+        {% endif %} {% else %}
+        <input type="hidden" name="action" value="give_plus" />
+        <button
+          type="submit"
+          class="px-4 py-2 rounded-lg border border-purple-500 text-purple-700 text-sm hover:bg-purple-50"
+        >
+          Donner Plus
+        </button>
+        <p class="text-[11px] text-slate-500">
+          Donne immédiatement tous les avantages de Plus à ce compte.
+        </p>
+        {% endif %}
+      </form>
+      {% endif %}
+    </div>
+
+    <div
+      class="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 space-y-3"
+    >
+      <h2 class="text-lg font-semibold text-slate-900">Sanctions</h2>
+
+      <div class="space-y-2">
+        <p class="text-xs font-semibold text-slate-700">Avertissements</p>
+
+        <form
+          method="POST"
+          action="{{ url_for('admin.admin_user_action') }}"
+          class="flex flex-col gap-2"
+        >
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <input type="hidden" name="username" value="{{ user.nom }}" />
+          <input type="hidden" name="action" value="warn" />
+          <input
+            type="hidden"
+            name="redirect_to"
+            value="{{ url_for('admin.admin_user_detail', user_id=user.id) }}"
+          />
+
+          <textarea
+            name="reason"
+            rows="2"
+            placeholder="Raison de l'avertissement"
+            class="text-xs px-3 py-2 rounded-lg border border-slate-300 resize-y"
+          ></textarea>
+
+          <button
+            type="submit"
+            class="px-4 py-2 rounded-lg bg-amber-100 text-amber-800 text-sm font-semibold hover:bg-amber-200"
+          >
+            Envoyer un avertissement
+          </button>
+
+          <p class="text-[11px] text-slate-500">
+            Un message privé automatique sera envoyé à l'utilisateur avec le nom
+            du modérateur et la raison.
+          </p>
         </form>
-    </section>
 
-    
-    <section class="grid gap-4 md:grid-cols-2">
-        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 space-y-3">
-            <h2 class="text-lg font-semibold text-slate-900">Permissions & rôle</h2>
-
-            {% if is_superadmin %}
-                <p class="text-xs text-slate-500">
-                    En tant que superadmin, tu peux donner ou retirer le rôle admin.
-                </p>
-                <form method="POST" action="{{ url_for('admin.admin_user_action') }}" class="space-y-2">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <input type="hidden" name="username" value="{{ user.nom }}">
-                    <input type="hidden" name="redirect_to" value="{{ url_for('admin.admin_user_detail', user_id=user.id) }}">
-                    {% if user.is_admin %}
-                        <input type="hidden" name="action" value="remove_admin">
-                        <button type="submit" class="px-4 py-2 rounded-lg border border-slate-300 text-slate-800 text-sm hover:bg-slate-100">
-                            Retirer le rôle admin
-                        </button>
-                    {% else %}
-                        <input type="hidden" name="action" value="make_admin">
-                        <button type="submit" class="px-4 py-2 rounded-lg border border-emerald-500 text-emerald-700 text-sm hover:bg-emerald-50">
-                            Donner le rôle admin
-                        </button>
-                    {% endif %}
-                </form>
-                
-            {% else %}
-                <p class="text-xs text-slate-500">
-                    Seul le superadmin peut modifier les rôles.
-                </p>
-            {% endif %}
-            {% if is_superadmin %}
-                <hr class="border-slate-200">
-
-                <p class="text-xs text-slate-500">
-                    En tant que superadmin, tu peux aussi gérer l'abonnement <span class="font-semibold">Plus</span> de cet utilisateur.
-                </p>
-
-                <form method="POST" action="{{ url_for('admin.admin_user_action') }}" class="space-y-2">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <input type="hidden" name="username" value="{{ user.nom }}">
-                    <input type="hidden" name="redirect_to" value="{{ url_for('admin.admin_user_detail', user_id=user.id) }}">
-
-                    {% if user.plan == "plus" %}
-                        <input type="hidden" name="action" value="remove_plus">
-                        <button type="submit" class="px-4 py-2 rounded-lg border border-amber-500 text-amber-700 text-sm hover:bg-amber-50">
-                            Retirer Plus
-                        </button>
-                        {% if user.plus_until_display %}
-                            <p class="text-[11px] text-slate-500">
-                                Actuellement Plus jusqu'au {{ user.plus_until_display }}.
-                            </p>
-                        {% else %}
-                            <p class="text-[11px] text-slate-500">
-                                Abonnement Plus actif (sans date de fin définie).
-                            </p>
-                        {% endif %}
-                    {% else %}
-                        <input type="hidden" name="action" value="give_plus">
-                        <button type="submit" class="px-4 py-2 rounded-lg border border-purple-500 text-purple-700 text-sm hover:bg-purple-50">
-                            Donner Plus
-                        </button>
-                        <p class="text-[11px] text-slate-500">
-                            Donne immédiatement tous les avantages de Plus à ce compte.
-                        </p>
-                    {% endif %}
-                </form>
-            {% endif %}
-
+        {% if warnings is defined and warnings|length > 0 %}
+        <div
+          class="mt-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 max-h-40 overflow-y-auto"
+        >
+          <p class="text-[11px] font-semibold text-slate-700 mb-1">
+            Historique des avertissements ({{ warnings|length }})
+          </p>
+          <ul class="space-y-1">
+            {% for w in warnings %}
+            <li class="text-[11px] text-slate-600">
+              <span class="font-semibold">{{ w.created_at_display }}</span>
+              — par <span class="font-semibold">{{ w.moderator }}</span> :
+              <span class="italic">{{ w.reason }}</span>
+            </li>
+            {% endfor %}
+          </ul>
         </div>
+        {% else %}
+        <p class="text-[11px] text-slate-500">
+          Aucun avertissement enregistré pour ce compte.
+        </p>
+        {% endif %}
+      </div>
 
-        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 space-y-3">
-            <h2 class="text-lg font-semibold text-slate-900">Sanctions</h2>
+      <hr class="border-slate-200" />
 
-            
-            <div class="space-y-2">
-                <p class="text-xs font-semibold text-slate-700">Avertissements</p>
+      <div class="space-y-2">
+        <p class="text-xs font-semibold text-slate-700">Ban</p>
+        {% if user.banned %}
+        <p class="text-xs text-red-600">
+          Actuellement banni{% if user.ban_reason %} : {{ user.ban_reason }}{%
+          endif %}
+        </p>
+        <form method="POST" action="{{ url_for('admin.admin_user_action') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <input type="hidden" name="username" value="{{ user.nom }}" />
+          <input type="hidden" name="action" value="unban" />
+          <input
+            type="hidden"
+            name="redirect_to"
+            value="{{ url_for('admin.admin_user_detail', user_id=user.id) }}"
+          />
+          <button
+            type="submit"
+            class="px-4 py-2 rounded-lg border border-emerald-500 text-emerald-700 text-sm hover:bg-emerald-50"
+          >
+            Débannir
+          </button>
+        </form>
+        {% else %}
+        <form
+          method="POST"
+          action="{{ url_for('admin.admin_user_action') }}"
+          class="flex flex-col gap-2"
+        >
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <input type="hidden" name="username" value="{{ user.nom }}" />
+          <input type="hidden" name="action" value="ban" />
+          <input
+            type="hidden"
+            name="redirect_to"
+            value="{{ url_for('admin.admin_user_detail', user_id=user.id) }}"
+          />
+          <input
+            type="text"
+            name="reason"
+            placeholder="Raison du ban"
+            class="text-xs px-3 py-2 rounded-lg border border-slate-300"
+          />
+          <button
+            type="submit"
+            class="px-4 py-2 rounded-lg bg-red-600 text-white text-sm hover:bg-red-500"
+          >
+            Bannir
+          </button>
+        </form>
+        {% endif %}
+      </div>
 
-                <form method="POST" action="{{ url_for('admin.admin_user_action') }}" class="flex flex-col gap-2">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <input type="hidden" name="username" value="{{ user.nom }}">
-                    <input type="hidden" name="action" value="warn">
-                    <input type="hidden" name="redirect_to" value="{{ url_for('admin.admin_user_detail', user_id=user.id) }}">
+      <hr class="border-slate-200" />
 
-                    <textarea name="reason" rows="2" placeholder="Raison de l'avertissement" class="text-xs px-3 py-2 rounded-lg border border-slate-300 resize-y"></textarea>
+      <div class="space-y-2">
+        <p class="text-xs font-semibold text-slate-700">Mute</p>
+        {% if user.muted %}
+        <p class="text-xs text-amber-600">
+          Actuellement mute {% if user.muted_until_display %} (jusqu'au {{
+          user.muted_until_display }}) {% else %} (durée indéfinie) {% endif %}
+        </p>
+        <form method="POST" action="{{ url_for('admin.admin_user_action') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <input type="hidden" name="username" value="{{ user.nom }}" />
+          <input type="hidden" name="action" value="unmute" />
+          <input
+            type="hidden"
+            name="redirect_to"
+            value="{{ url_for('admin.admin_user_detail', user_id=user.id) }}"
+          />
+          <button
+            type="submit"
+            class="px-4 py-2 rounded-lg border border-amber-500 text-amber-700 text-sm hover:bg-amber-50"
+          >
+            Unmute
+          </button>
+        </form>
+        {% else %}
+        <form
+          method="POST"
+          action="{{ url_for('admin.admin_user_action') }}"
+          class="flex flex-col gap-2"
+        >
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <input type="hidden" name="username" value="{{ user.nom }}" />
+          <input type="hidden" name="action" value="mute" />
+          <input
+            type="hidden"
+            name="redirect_to"
+            value="{{ url_for('admin.admin_user_detail', user_id=user.id) }}"
+          />
 
-                    <button type="submit" class="px-4 py-2 rounded-lg bg-amber-100 text-amber-800 text-sm font-semibold hover:bg-amber-200">
-                        Envoyer un avertissement
-                    </button>
+          <div class="flex gap-2">
+            <input
+              type="text"
+              name="duration"
+              placeholder="Durée (min, vide = ∞)"
+              class="w-32 text-xs px-3 py-2 rounded-lg border border-slate-300"
+            />
+            <input
+              type="text"
+              name="mute_reason"
+              placeholder="Raison du mute"
+              class="flex-1 text-xs px-3 py-2 rounded-lg border border-slate-300"
+            />
+          </div>
 
-                    <p class="text-[11px] text-slate-500">
-                        Un message privé automatique sera envoyé à l'utilisateur avec le nom du modérateur et la raison.
-                    </p>
-                </form>
+          <button
+            type="submit"
+            class="px-4 py-2 rounded-lg bg-amber-500 text-white text-sm hover:bg-amber-400"
+          >
+            Mute
+          </button>
+        </form>
+        {% endif %}
+      </div>
 
-                {% if warnings is defined and warnings|length > 0 %}
-                    <div class="mt-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 max-h-40 overflow-y-auto">
-                        <p class="text-[11px] font-semibold text-slate-700 mb-1">
-                            Historique des avertissements ({{ warnings|length }})
-                        </p>
-                        <ul class="space-y-1">
-                            {% for w in warnings %}
-                            <li class="text-[11px] text-slate-600">
-                                <span class="font-semibold">{{ w.created_at_display }}</span>
-                                — par <span class="font-semibold">{{ w.moderator }}</span> :
-                                <span class="italic">{{ w.reason }}</span>
-                            </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                {% else %}
-                    <p class="text-[11px] text-slate-500">
-                        Aucun avertissement enregistré pour ce compte.
-                    </p>
-                {% endif %}
-            </div>
+      <hr class="border-slate-200" />
 
-            <hr class="border-slate-200">
+      {% if not user.is_admin %}
+      <form
+        method="POST"
+        action="{{ url_for('admin.admin_user_action') }}"
+        class="mt-2"
+      >
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <input type="hidden" name="username" value="{{ user.nom }}" />
+        <input type="hidden" name="action" value="delete" />
+        <button
+          type="submit"
+          onclick="return confirm('Supprimer définitivement le compte {{ user.nom }} ?');"
+          class="px-4 py-2 rounded-lg border border-red-500 text-red-600 text-xs hover:bg-red-50"
+        >
+          Supprimer le compte
+        </button>
+      </form>
+      {% endif %}
+    </div>
+  </section>
 
-            
-            <div class="space-y-2">
-                <p class="text-xs font-semibold text-slate-700">Ban</p>
-                {% if user.banned %}
-                    <p class="text-xs text-red-600">
-                        Actuellement banni{% if user.ban_reason %} : {{ user.ban_reason }}{% endif %}
-                    </p>
-                    <form method="POST" action="{{ url_for('admin.admin_user_action') }}">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <input type="hidden" name="username" value="{{ user.nom }}">
-                        <input type="hidden" name="action" value="unban">
-                        <input type="hidden" name="redirect_to" value="{{ url_for('admin.admin_user_detail', user_id=user.id) }}">
-                        <button type="submit" class="px-4 py-2 rounded-lg border border-emerald-500 text-emerald-700 text-sm hover:bg-emerald-50">
-                            Débannir
-                        </button>
-                    </form>
-                {% else %}
-                    <form method="POST" action="{{ url_for('admin.admin_user_action') }}" class="flex flex-col gap-2">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <input type="hidden" name="username" value="{{ user.nom }}">
-                        <input type="hidden" name="action" value="ban">
-                        <input type="hidden" name="redirect_to" value="{{ url_for('admin.admin_user_detail', user_id=user.id) }}">
-                        <input type="text" name="reason" placeholder="Raison du ban" class="text-xs px-3 py-2 rounded-lg border border-slate-300">
-                        <button type="submit" class="px-4 py-2 rounded-lg bg-red-600 text-white text-sm hover:bg-red-500">
-                            Bannir
-                        </button>
-                    </form>
-                {% endif %}
-            </div>
+  <section class="grid gap-4 md:grid-cols-2">
+    <div
+      class="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 space-y-3"
+    >
+      <h2 class="text-lg font-semibold text-slate-900">Messages</h2>
+      <p class="text-sm text-slate-600">
+        Voir et gérer tous les messages envoyés par cet utilisateur.
+      </p>
+      <a
+        href="{{ url_for('admin.admin_messages', author=user.nom) }}"
+        class="inline-flex items-center justify-center px-4 py-2 rounded-lg border border-sky-500 text-sky-700 text-sm hover:bg-sky-50"
+      >
+        Ouvrir les messages de {{ user.nom }}
+      </a>
+    </div>
 
-            <hr class="border-slate-200">
+    <div
+      class="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 space-y-3"
+    >
+      <h2 class="text-lg font-semibold text-slate-900">
+        Accès spécial sans A2F
+      </h2>
+      <p class="text-sm text-slate-600">
+        Génère un identifiant + mot de passe très longs, valables 6 heures
+        maximum, qui permettent de se connecter à ce compte
+        <span class="font-semibold">sans A2F même si elle est activée</span>.
+      </p>
+      {% if not is_superadmin %}
+      <p class="text-xs text-slate-500">
+        Seul le superadmin peut créer des accès spéciaux.
+      </p>
+      {% elif not can_manage %}
+      <p class="text-xs text-slate-500">
+        Tu ne peux pas créer d'accès spécial pour ce compte.
+      </p>
+      {% else %}
+      <form
+        method="POST"
+        action="{{ url_for('admin.admin_create_temp_login', user_id=user.id) }}"
+        class="space-y-2"
+      >
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <button
+          type="submit"
+          class="px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800"
+        >
+          Générer un accès spécial 6h
+        </button>
+      </form>
+      {% endif %}
 
-            
-            <div class="space-y-2">
-                <p class="text-xs font-semibold text-slate-700">Mute</p>
-                {% if user.muted %}
-                    <p class="text-xs text-amber-600">
-                        Actuellement mute
-                        {% if user.muted_until_display %}
-                            (jusqu'au {{ user.muted_until_display }})
-                        {% else %}
-                            (durée indéfinie)
-                        {% endif %}
-                    </p>
-                    <form method="POST" action="{{ url_for('admin.admin_user_action') }}">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <input type="hidden" name="username" value="{{ user.nom }}">
-                        <input type="hidden" name="action" value="unmute">
-                        <input type="hidden" name="redirect_to" value="{{ url_for('admin.admin_user_detail', user_id=user.id) }}">
-                        <button type="submit" class="px-4 py-2 rounded-lg border border-amber-500 text-amber-700 text-sm hover:bg-amber-50">
-                            Unmute
-                        </button>
-                    </form>
-                {% else %}
-                    <form method="POST" action="{{ url_for('admin.admin_user_action') }}" class="flex flex-col gap-2">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <input type="hidden" name="username" value="{{ user.nom }}">
-                        <input type="hidden" name="action" value="mute">
-                        <input type="hidden" name="redirect_to" value="{{ url_for('admin.admin_user_detail', user_id=user.id) }}">
-
-                        <div class="flex gap-2">
-                            <input type="text" name="duration" placeholder="Durée (min, vide = ∞)" class="w-32 text-xs px-3 py-2 rounded-lg border border-slate-300">
-                            <input type="text" name="mute_reason" placeholder="Raison du mute" class="flex-1 text-xs px-3 py-2 rounded-lg border border-slate-300">
-                        </div>
-
-                        <button type="submit" class="px-4 py-2 rounded-lg bg-amber-500 text-white text-sm hover:bg-amber-400">
-                            Mute
-                        </button>
-                    </form>
-                {% endif %}
-            </div>
-
-            <hr class="border-slate-200">
-
-            
-            {% if not user.is_admin %}
-            <form method="POST" action="{{ url_for('admin.admin_user_action') }}" class="mt-2">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <input type="hidden" name="username" value="{{ user.nom }}">
-                <input type="hidden" name="action" value="delete">
-                <button type="submit" onclick="return confirm('Supprimer définitivement le compte {{ user.nom }} ?');" class="px-4 py-2 rounded-lg border border-red-500 text-red-600 text-xs hover:bg-red-50">
-                    Supprimer le compte
-                </button>
-            </form>
-            {% endif %}
-        </div>
-    </section>
-
-    
-    <section class="grid gap-4 md:grid-cols-2">
-        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 space-y-3">
-            <h2 class="text-lg font-semibold text-slate-900">Messages</h2>
-            <p class="text-sm text-slate-600">
-                Voir et gérer tous les messages envoyés par cet utilisateur.
-            </p>
-            <a href="{{ url_for('admin.admin_messages', author=user.nom) }}" class="inline-flex items-center justify-center px-4 py-2 rounded-lg border border-sky-500 text-sky-700 text-sm hover:bg-sky-50">
-                Ouvrir les messages de {{ user.nom }}
-            </a>
-        </div>
-
-        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 space-y-3">
-            <h2 class="text-lg font-semibold text-slate-900">Accès spécial sans A2F</h2>
-            <p class="text-sm text-slate-600">
-                Génère un identifiant + mot de passe très longs, valables 6 heures maximum, qui permettent
-                de se connecter à ce compte <span class="font-semibold">sans A2F même si elle est activée</span>.
-            </p>
-            {% if not is_superadmin %}
-                <p class="text-xs text-slate-500">
-                    Seul le superadmin peut créer des accès spéciaux.
-                </p>
-            {% elif not can_manage %}
-                <p class="text-xs text-slate-500">
-                    Tu ne peux pas créer d'accès spécial pour ce compte.
-                </p>
-            {% else %}
-                <form method="POST" action="{{ url_for('admin.admin_create_temp_login', user_id=user.id) }}" class="space-y-2">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <button type="submit" class="px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800">
-                        Générer un accès spécial 6h
-                    </button>
-                </form>
-            {% endif %}
-
-            <p class="text-[11px] text-slate-500">
-                Utilise ça uniquement pour du support / debug. Les accès expirent automatiquement après 6h.
-            </p>
-        </div>
-    </section>
-
+      <p class="text-[11px] text-slate-500">
+        Utilise ça uniquement pour du support / debug. Les accès expirent
+        automatiquement après 6h.
+      </p>
+    </div>
+  </section>
 </div>
 
 {% endblock %}

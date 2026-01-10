@@ -1,130 +1,140 @@
-{% extends "base.html" %}
-{% block title %}Confirmation DDC Plus{% endblock %}
-
+{% extends "base.html" %} {% block title %}Confirmation DDC Plus{% endblock %}
 {% block content %}
 
 <div class="max-w-3xl mx-auto mt-6 space-y-4">
+  {% if error %}
+  <div
+    class="bg-red-50 text-red-800 border border-red-200 px-4 py-3 rounded-xl shadow-sm text-sm"
+  >
+    {{ error }}
+  </div>
+  {% endif %}
 
-    {% if error %}
-        <div class="bg-red-50 text-red-800 border border-red-200 px-4 py-3 rounded-xl shadow-sm text-sm">
-            {{ error }}
+  <div
+    class="bg-white border border-slate-200 rounded-2xl shadow-sm p-5 space-y-4"
+  >
+    <h1 class="text-2xl font-semibold text-slate-900">Résumé de la commande</h1>
+
+    <div class="border border-slate-200 rounded-xl p-4 space-y-3">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-semibold text-slate-900">DelDevCode Plus</p>
+          <p class="text-xs text-slate-500">
+            Abonnement annuel • 2000 messages/h • 3 clés API
+          </p>
         </div>
-    {% endif %}
-
-    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-5 space-y-4">
-
-        <h1 class="text-2xl font-semibold text-slate-900">
-            Résumé de la commande
-        </h1>
-
-        
-        <div class="border border-slate-200 rounded-xl p-4 space-y-3">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-semibold text-slate-900">
-                        DelDevCode Plus
-                    </p>
-                    <p class="text-xs text-slate-500">
-                        Abonnement annuel • 2000 messages/h • 3 clés API
-                    </p>
-                </div>
-                <div class="text-right">
-                    <p class="text-sm font-semibold text-slate-900">
-                        {{ "%.2f"|format(base_price_plus) }}€ / an
-                    </p>
-                </div>
-            </div>
-
-            <div class="border-t border-dashed border-slate-200 my-3"></div>
-
-            <div class="flex items-center justify-between text-sm">
-                <span class="text-slate-600">Sous-total</span>
-                <span class="font-medium text-slate-900">
-                    {{ "%.2f"|format(base_price_plus) }}€
-                </span>
-            </div>
-
-            <div class="flex items-center justify-between text-sm">
-                <span class="text-slate-600">
-                    Réduction
-                    {% if has_promo_applied and promo_code %}
-                        <span class="text-xs text-emerald-600">(code {{ promo_code }})</span>
-                    {% elif has_auto_discount %}
-                        <span class="text-xs text-emerald-600">(réduction automatique)</span>
-                    {% endif %}
-                </span>
-
-                {% if discount_amount > 0 %}
-                    <span class="font-medium text-emerald-700">
-                        -{{ "%.2f"|format(discount_amount) }}€
-                    </span>
-                {% else %}
-                    <span class="font-medium text-slate-400">
-                        Aucune
-                    </span>
-                {% endif %}
-            </div>
-
-            <div class="border-t border-slate-200 my-3"></div>
-
-            <div class="flex items-center justify-between">
-                <span class="text-sm font-semibold text-slate-900">
-                    Total estimé
-                </span>
-                <span class="text-lg font-bold text-slate-900">
-                    {{ "%.2f"|format(total_price) }}€
-                </span>
-            </div>
-
-            <p class="text-[11px] text-slate-500 mt-1">
-                Le montant exact sera calculé par Stripe lors du paiement, mais devrait correspondre à ce total.
-            </p>
+        <div class="text-right">
+          <p class="text-sm font-semibold text-slate-900">
+            {{ "%.2f"|format(base_price_plus) }}€ / an
+          </p>
         </div>
+      </div>
 
-        
-        <div class="border border-dashed border-emerald-200 rounded-xl p-4 space-y-2">
-            <p class="text-xs font-semibold text-slate-700 uppercase">
-                Code de réduction
-            </p>
-            <p class="text-xs text-slate-500">
-                Si tu as un code, entre-le ici pour l'appliquer avant de payer.
-            </p>
+      <div class="border-t border-dashed border-slate-200 my-3"></div>
 
-            <form method="post" action="{{ url_for('billing.plus_confirm') }}" class="flex flex-col sm:flex-row gap-2">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <input type="text" name="promo_code" value="{{ promo_code or '' }}" placeholder="Exemple : PLUS2025" class="flex-1 text-sm px-3 py-2 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 uppercase">
-                <button type="submit" name="action" value="apply_code" class="inline-flex items-center justify-center px-4 py-2 rounded-md bg-slate-900 text-white text-sm font-medium hover:bg-slate-800 transition">
-                    Appliquer le code
-                </button>
-            </form>
+      <div class="flex items-center justify-between text-sm">
+        <span class="text-slate-600">Sous-total</span>
+        <span class="font-medium text-slate-900">
+          {{ "%.2f"|format(base_price_plus) }}€
+        </span>
+      </div>
 
-            {% if has_promo_applied and promo_code %}
-                <p class="text-xs text-emerald-600 mt-1">
-                    ✅ Code <span class="font-semibold">{{ promo_code }}</span> appliqué.  
-                    La réduction est prise en compte dans le total estimé.
-                </p>
-            {% elif has_auto_discount and discount_amount > 0 %}
-                <p class="text-xs text-emerald-600 mt-1">
-                    ✅ Une réduction automatique est active sur DelDevCode Plus.
-                </p>
-            {% endif %}
-        </div>
+      <div class="flex items-center justify-between text-sm">
+        <span class="text-slate-600">
+          Réduction {% if has_promo_applied and promo_code %}
+          <span class="text-xs text-emerald-600">(code {{ promo_code }})</span>
+          {% elif has_auto_discount %}
+          <span class="text-xs text-emerald-600">(réduction automatique)</span>
+          {% endif %}
+        </span>
 
-        
-        <div class="pt-1">
-            <form method="post" action="{{ url_for('billing.create_checkout_session') }}">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <button type="submit" class="w-full inline-flex items-center justify-center px-4 py-2 rounded-md bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 transition">
-                    Payer avec Stripe
-                </button>
-            </form>
-            <p class="text-[11px] text-slate-500 mt-2 text-center">
-                Tu seras redirigé sur une page de paiement Stripe sécurisée.
-            </p>
-        </div>
+        {% if discount_amount > 0 %}
+        <span class="font-medium text-emerald-700">
+          -{{ "%.2f"|format(discount_amount) }}€
+        </span>
+        {% else %}
+        <span class="font-medium text-slate-400"> Aucune </span>
+        {% endif %}
+      </div>
 
+      <div class="border-t border-slate-200 my-3"></div>
+
+      <div class="flex items-center justify-between">
+        <span class="text-sm font-semibold text-slate-900"> Total estimé </span>
+        <span class="text-lg font-bold text-slate-900">
+          {{ "%.2f"|format(total_price) }}€
+        </span>
+      </div>
+
+      <p class="text-[11px] text-slate-500 mt-1">
+        Le montant exact sera calculé par Stripe lors du paiement, mais devrait
+        correspondre à ce total.
+      </p>
     </div>
 
+    <div
+      class="border border-dashed border-emerald-200 rounded-xl p-4 space-y-2"
+    >
+      <p class="text-xs font-semibold text-slate-700 uppercase">
+        Code de réduction
+      </p>
+      <p class="text-xs text-slate-500">
+        Si tu as un code, entre-le ici pour l'appliquer avant de payer.
+      </p>
+
+      <form
+        method="post"
+        action="{{ url_for('billing.plus_confirm') }}"
+        class="flex flex-col sm:flex-row gap-2"
+      >
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <input
+          type="text"
+          name="promo_code"
+          value="{{ promo_code or '' }}"
+          placeholder="Exemple : PLUS2025"
+          class="flex-1 text-sm px-3 py-2 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 uppercase"
+        />
+        <button
+          type="submit"
+          name="action"
+          value="apply_code"
+          class="inline-flex items-center justify-center px-4 py-2 rounded-md bg-slate-900 text-white text-sm font-medium hover:bg-slate-800 transition"
+        >
+          Appliquer le code
+        </button>
+      </form>
+
+      {% if has_promo_applied and promo_code %}
+      <p class="text-xs text-emerald-600 mt-1">
+        ✅ Code <span class="font-semibold">{{ promo_code }}</span> appliqué. La
+        réduction est prise en compte dans le total estimé.
+      </p>
+      {% elif has_auto_discount and discount_amount > 0 %}
+      <p class="text-xs text-emerald-600 mt-1">
+        ✅ Une réduction automatique est active sur DelDevCode Plus.
+      </p>
+      {% endif %}
+    </div>
+
+    <div class="pt-1">
+      <form
+        method="post"
+        action="{{ url_for('billing.create_checkout_session') }}"
+      >
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <button
+          type="submit"
+          class="w-full inline-flex items-center justify-center px-4 py-2 rounded-md bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 transition"
+        >
+          Payer avec Stripe
+        </button>
+      </form>
+      <p class="text-[11px] text-slate-500 mt-2 text-center">
+        Tu seras redirigé sur une page de paiement Stripe sécurisée.
+      </p>
+    </div>
+  </div>
 </div>
 
 {% endblock %}

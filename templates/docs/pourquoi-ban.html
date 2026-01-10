@@ -1,115 +1,145 @@
-{% extends "base.html" %}
-{% block title %}Pourquoi suis-je banni ? • DDC{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}Pourquoi suis-je banni ? • DDC{%
+endblock %} {% block content %}
 
 <div class="max-w-5xl mx-auto space-y-8">
+  <header class="space-y-2 mt-4 md:mt-6">
+    <p class="text-xs uppercase tracking-wide text-emerald-600 font-semibold">
+      Documentation · Modération
+    </p>
+    <h1 class="text-2xl md:text-3xl font-bold text-slate-900">
+      Pourquoi suis-je banni ?
+    </h1>
+    <p class="text-sm md:text-base text-slate-600 max-w-2xl">
+      Si tu vois un message indiquant que ton compte est banni, cela signifie
+      qu’une restriction a été appliquée sur ton accès à DelDevCode.
+    </p>
+  </header>
 
-    
-    <header class="space-y-2 mt-4 md:mt-6">
-        <p class="text-xs uppercase tracking-wide text-emerald-600 font-semibold">
-            Documentation · Modération
+  <article
+    class="bg-white border border-slate-200 rounded-2xl shadow-sm p-5 md:p-6 space-y-6"
+  >
+    <section class="space-y-2">
+      <h2 class="text-lg md:text-xl font-semibold text-slate-900">
+        1. Ce que signifie être banni
+      </h2>
+      <p class="text-sm md:text-base text-slate-700 leading-relaxed">
+        Un ban empêche ton compte (et parfois ton adresse IP) d’accéder à tout
+        ou partie du site :
+      </p>
+      <ul
+        class="list-disc list-inside text-sm md:text-base text-slate-700 space-y-1"
+      >
+        <li>Tu peux ne plus pouvoir te connecter du tout.</li>
+        <li>Ou tu peux te connecter, mais plus écrire dans le chat.</li>
+        <li>
+          Dans certains cas, tu peux lire mais plus participer (mute /
+          restriction).
+        </li>
+      </ul>
+      <p class="text-sm md:text-base text-slate-700 leading-relaxed">
+        Le type de sanction dépend de la gravité de la situation et de
+        l’historique du compte.
+      </p>
+    </section>
+
+    <section class="space-y-2">
+      <h2 class="text-lg md:text-xl font-semibold text-slate-900">
+        2. Raisons possibles d’un ban
+      </h2>
+      <p class="text-sm md:text-base text-slate-700 leading-relaxed">
+        Sans être exhaustif, voici quelques raisons fréquentes de ban ou de
+        sanction :
+      </p>
+      <ul
+        class="list-disc list-inside text-sm md:text-base text-slate-700 space-y-1"
+      >
+        <li>
+          <span class="font-medium">Insultes, harcèlement ou menaces</span>
+          envers d’autres utilisateurs.
+        </li>
+        <li>
+          <span class="font-medium">Propos discriminatoires</span> (racisme,
+          sexisme, homophobie, etc.).
+        </li>
+        <li>
+          <span class="font-medium">Spam / flood</span> volontaire dans les
+          salons ou en MP.
+        </li>
+        <li>
+          <span class="font-medium"
+            >Partage de contenu illégal ou dangereux</span
+          >.
+        </li>
+        <li>
+          <span class="font-medium">Contournement volontaire</span> de règles
+          techniques ou tentatives d’abus du système.
+        </li>
+      </ul>
+      <p class="text-sm md:text-base text-slate-700 leading-relaxed">
+        Dans certains cas, un avertissement peut être envoyé avant un ban
+        définitif, mais pour certaines infractions graves, la sanction peut être
+        immédiate.
+      </p>
+    </section>
+
+    <section class="space-y-2">
+      <h2 class="text-lg md:text-xl font-semibold text-slate-900">
+        3. Est-ce que le ban est temporaire ou définitif ?
+      </h2>
+      <p class="text-sm md:text-base text-slate-700 leading-relaxed">
+        Selon la configuration du système de modération, un ban peut être :
+      </p>
+      <ul
+        class="list-disc list-inside text-sm md:text-base text-slate-700 space-y-1"
+      >
+        <li>
+          <span class="font-medium">Temporaire :</span> le compte est bloqué
+          pendant une durée limitée.
+        </li>
+        <li>
+          <span class="font-medium">Définitif :</span> le compte est bloqué de
+          façon permanente.
+        </li>
+      </ul>
+      <p class="text-sm md:text-base text-slate-700 leading-relaxed">
+        Si une durée est affichée dans le message d’erreur ou la page d’info
+        ban, tu pourras à nouveau accéder au site une fois ce délai passé.
+      </p>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg md:text-xl font-semibold text-slate-900">
+        4. Tu penses que c’est une erreur ?
+      </h2>
+      <p class="text-sm md:text-base text-slate-700 leading-relaxed">
+        Si tu penses que ton ban est une erreur, ou si tu souhaites demander des
+        explications, tu peux contacter le support.
+      </p>
+      <div
+        class="border border-amber-200 bg-amber-50 rounded-xl px-4 py-3 text-sm md:text-base text-amber-900 space-y-1"
+      >
+        <p class="font-semibold">Contacter le support DelDevCode</p>
+        <p>
+          Ouvre un ticket sur
+          <a
+            href="/support"
+            class="font-medium underline underline-offset-2 hover:text-amber-800"
+          >
+            deldevcode.org/support
+          </a>
         </p>
-        <h1 class="text-2xl md:text-3xl font-bold text-slate-900">
-            Pourquoi suis-je banni ?
-        </h1>
-        <p class="text-sm md:text-base text-slate-600 max-w-2xl">
-            Si tu vois un message indiquant que ton compte est banni,
-            cela signifie qu’une restriction a été appliquée sur ton accès à DelDevCode.
+        <p class="text-xs md:text-sm text-amber-900/90">
+          Pense à préciser ton pseudo, l’adresse email de ton compte, la date
+          approximative du ban et, si possible, ce que tu faisais au moment où
+          le problème est apparu.
         </p>
-    </header>
-
-    <article class="bg-white border border-slate-200 rounded-2xl shadow-sm p-5 md:p-6 space-y-6">
-
-        
-        <section class="space-y-2">
-            <h2 class="text-lg md:text-xl font-semibold text-slate-900">
-                1. Ce que signifie être banni
-            </h2>
-            <p class="text-sm md:text-base text-slate-700 leading-relaxed">
-                Un ban empêche ton compte (et parfois ton adresse IP) d’accéder à tout ou partie du site :
-            </p>
-            <ul class="list-disc list-inside text-sm md:text-base text-slate-700 space-y-1">
-                <li>Tu peux ne plus pouvoir te connecter du tout.</li>
-                <li>Ou tu peux te connecter, mais plus écrire dans le chat.</li>
-                <li>Dans certains cas, tu peux lire mais plus participer (mute / restriction).</li>
-            </ul>
-            <p class="text-sm md:text-base text-slate-700 leading-relaxed">
-                Le type de sanction dépend de la gravité de la situation et de l’historique du compte.
-            </p>
-        </section>
-
-        
-        <section class="space-y-2">
-            <h2 class="text-lg md:text-xl font-semibold text-slate-900">
-                2. Raisons possibles d’un ban
-            </h2>
-            <p class="text-sm md:text-base text-slate-700 leading-relaxed">
-                Sans être exhaustif, voici quelques raisons fréquentes de ban ou de sanction :
-            </p>
-            <ul class="list-disc list-inside text-sm md:text-base text-slate-700 space-y-1">
-                <li><span class="font-medium">Insultes, harcèlement ou menaces</span> envers d’autres utilisateurs.</li>
-                <li><span class="font-medium">Propos discriminatoires</span> (racisme, sexisme, homophobie, etc.).</li>
-                <li><span class="font-medium">Spam / flood</span> volontaire dans les salons ou en MP.</li>
-                <li><span class="font-medium">Partage de contenu illégal ou dangereux</span>.</li>
-                <li><span class="font-medium">Contournement volontaire</span> de règles techniques ou tentatives d’abus du système.</li>
-            </ul>
-            <p class="text-sm md:text-base text-slate-700 leading-relaxed">
-                Dans certains cas, un avertissement peut être envoyé avant un ban définitif,
-                mais pour certaines infractions graves, la sanction peut être immédiate.
-            </p>
-        </section>
-
-        
-        <section class="space-y-2">
-            <h2 class="text-lg md:text-xl font-semibold text-slate-900">
-                3. Est-ce que le ban est temporaire ou définitif ?
-            </h2>
-            <p class="text-sm md:text-base text-slate-700 leading-relaxed">
-                Selon la configuration du système de modération, un ban peut être :
-            </p>
-            <ul class="list-disc list-inside text-sm md:text-base text-slate-700 space-y-1">
-                <li><span class="font-medium">Temporaire :</span> le compte est bloqué pendant une durée limitée.</li>
-                <li><span class="font-medium">Définitif :</span> le compte est bloqué de façon permanente.</li>
-            </ul>
-            <p class="text-sm md:text-base text-slate-700 leading-relaxed">
-                Si une durée est affichée dans le message d’erreur ou la page d’info ban,
-                tu pourras à nouveau accéder au site une fois ce délai passé.
-            </p>
-        </section>
-
-        
-        <section class="space-y-3">
-            <h2 class="text-lg md:text-xl font-semibold text-slate-900">
-                4. Tu penses que c’est une erreur ?
-            </h2>
-            <p class="text-sm md:text-base text-slate-700 leading-relaxed">
-                Si tu penses que ton ban est une erreur, ou si tu souhaites demander des explications,
-                tu peux contacter le support.
-            </p>
-            <div class="border border-amber-200 bg-amber-50 rounded-xl px-4 py-3 text-sm md:text-base text-amber-900 space-y-1">
-                <p class="font-semibold">
-                    Contacter le support DelDevCode
-                </p>
-                <p>
-                    Ouvre un ticket sur
-                    <a href="/support" class="font-medium underline underline-offset-2 hover:text-amber-800">
-                        deldevcode.org/support
-                    </a>
-                </p>
-                <p class="text-xs md:text-sm text-amber-900/90">
-                    Pense à préciser ton pseudo, l’adresse email de ton compte, la date approximative du ban
-                    et, si possible, ce que tu faisais au moment où le problème est apparu.
-                </p>
-            </div>
-            <p class="text-xs md:text-sm text-slate-500">
-                Le fait de contacter le support ne garantit pas un déban, mais permet au moins
-                de revoir la situation et de vérifier si tout est cohérent.
-            </p>
-        </section>
-
-    </article>
-
+      </div>
+      <p class="text-xs md:text-sm text-slate-500">
+        Le fait de contacter le support ne garantit pas un déban, mais permet au
+        moins de revoir la situation et de vérifier si tout est cohérent.
+      </p>
+    </section>
+  </article>
 </div>
 
 {% endblock %}

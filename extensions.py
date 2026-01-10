@@ -20,6 +20,7 @@ def get_client_ip():
 
     return request.remote_addr
 
+
 limiter = Limiter(
     key_func=get_client_ip,
     default_limits=["200 per hour"],

@@ -1,123 +1,140 @@
-{% extends "base.html" %}
-{% block title %}DDC Plus{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}DDC Plus{% endblock %} {% block
+content %}
 
 <div class="max-w-5xl mx-auto space-y-6">
+  <section class="text-center space-y-2 mb-4">
+    <h1 class="text-3xl md:text-4xl font-bold text-slate-900">
+      Abonnements DelDevCode
+    </h1>
+    <p class="text-sm md:text-base text-slate-600">
+      Choisis l'offre qui correspond à ton usage. Tu peux rester en gratuit ou
+      passer à Plus si tu as besoin de plus de marge.
+    </p>
+    {% if plan %}
+    <p class="text-xs md:text-sm text-emerald-600 font-medium">
+      Plan actuel : <span class="font-semibold">{{ plan|capitalize }}</span>
+    </p>
+    {% endif %}
+  </section>
 
-    
-    <section class="text-center space-y-2 mb-4">
-        <h1 class="text-3xl md:text-4xl font-bold text-slate-900">
-            Abonnements DelDevCode
-        </h1>
-        <p class="text-sm md:text-base text-slate-600">
-            Choisis l'offre qui correspond à ton usage. Tu peux rester en gratuit ou passer à Plus si tu as besoin de plus de marge.
-        </p>
-        {% if plan %}
-            <p class="text-xs md:text-sm text-emerald-600 font-medium">
-                Plan actuel : <span class="font-semibold">{{ plan|capitalize }}</span>
-            </p>
+  <section class="grid gap-5 md:grid-cols-2">
+    <article
+      class="bg-white border border-slate-200 rounded-xl shadow-sm p-5 flex flex-col"
+    >
+      <div class="flex items-baseline justify-between mb-3">
+        <h2 class="text-lg font-semibold text-slate-900">Gratuit</h2>
+        <span
+          class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-700"
+        >
+          Plan de base
+        </span>
+      </div>
+
+      <p class="text-sm text-slate-600 mb-4">
+        Pour découvrir DelDevCode tranquillement, sans engagement.
+      </p>
+
+      <div class="mb-4">
+        <div class="text-2xl font-bold text-slate-900">
+          0€
+          <span class="text-sm font-normal text-slate-500">/ à vie</span>
+        </div>
+      </div>
+
+      <ul class="text-sm text-slate-700 space-y-1.5 mb-4">
+        <li>
+          ✔ Jusqu'à <span class="font-semibold">500 messages / heure</span>
+        </li>
+        <li>
+          ✔ <span class="font-semibold">1 clé API</span> pour tester
+          l'intégration (a 20 req/m)
+        </li>
+        <li>✔ Accès au chat, DM et groupes</li>
+      </ul>
+
+      <div class="mt-auto">
+        {% if plan == "free" %}
+        <button
+          class="w-full inline-flex items-center justify-center px-4 py-2 rounded-md bg-slate-100 text-slate-700 text-sm font-medium cursor-default"
+        >
+          Plan actuel
+        </button>
+        {% else %}
+        <button
+          class="w-full inline-flex items-center justify-center px-4 py-2 rounded-md bg-slate-100 text-slate-700 text-sm font-medium cursor-default"
+        >
+          Inclus avec ton compte
+        </button>
         {% endif %}
-    </section>
+      </div>
+    </article>
 
-    
-    <section class="grid gap-5 md:grid-cols-2">
+    <article
+      class="bg-white border border-emerald-200 rounded-xl shadow-sm p-5 flex flex-col"
+    >
+      <div class="flex items-baseline justify-between mb-3">
+        <h2 class="text-lg font-semibold text-slate-900">DelDevCode Plus</h2>
+        <span
+          class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700"
+        >
+          Recommandé
+        </span>
+      </div>
 
-        
-        <article class="bg-white border border-slate-200 rounded-xl shadow-sm p-5 flex flex-col">
-            <div class="flex items-baseline justify-between mb-3">
-                <h2 class="text-lg font-semibold text-slate-900">
-                    Gratuit
-                </h2>
-                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-700">
-                    Plan de base
-                </span>
-            </div>
+      <p class="text-sm text-slate-600 mb-4">
+        Pour les goat qui veulent soutenir DelDevCode en ayant quelques
+        avantages.
+      </p>
 
-            <p class="text-sm text-slate-600 mb-4">
-                Pour découvrir DelDevCode tranquillement, sans engagement.
-            </p>
+      <div class="mb-4">
+        <div class="text-2xl font-bold text-slate-900">
+          5€
+          <span class="text-sm font-normal text-slate-500">/ an</span>
+        </div>
+      </div>
 
-            <div class="mb-4">
-                <div class="text-2xl font-bold text-slate-900">
-                    0€
-                    <span class="text-sm font-normal text-slate-500">/ à vie</span>
-                </div>
-            </div>
+      <ul class="text-sm text-slate-700 space-y-1.5 mb-4">
+        <li>🚀 <span class="font-semibold">1000 messages / heure</span></li>
+        <li>
+          🔑 <span class="font-semibold">3 clés API</span> pour tes projets
+        </li>
+        <li>
+          🔑 <span class="font-semibold">300 req/m</span> pour tes clés API
+        </li>
+        <li>👍 <span class="font-semibold">Réaction</span> aux messages</li>
+        <li>
+          ⭐ Badge Plus sur ton compte
+          <span class="text-xs text-slate-500">(bientôt)</span>
+        </li>
+      </ul>
 
-            <ul class="text-sm text-slate-700 space-y-1.5 mb-4">
-                <li>✔ Jusqu'à <span class="font-semibold">500 messages / heure</span></li>
-                <li>✔ <span class="font-semibold">1 clé API</span> pour tester l'intégration (a 20 req/m)</li>
-                <li>✔ Accès au chat, DM et groupes</li>
-            </ul>
-
-            <div class="mt-auto">
-                {% if plan == "free" %}
-                    <button class="w-full inline-flex items-center justify-center px-4 py-2 rounded-md bg-slate-100 text-slate-700 text-sm font-medium cursor-default">
-                        Plan actuel
-                    </button>
-                {% else %}
-                    <button class="w-full inline-flex items-center justify-center px-4 py-2 rounded-md bg-slate-100 text-slate-700 text-sm font-medium cursor-default">
-                        Inclus avec ton compte
-                    </button>
-                {% endif %}
-            </div>
-        </article>
-
-        
-        <article class="bg-white border border-emerald-200 rounded-xl shadow-sm p-5 flex flex-col">
-            <div class="flex items-baseline justify-between mb-3">
-                <h2 class="text-lg font-semibold text-slate-900">
-                    DelDevCode Plus
-                </h2>
-                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700">
-                    Recommandé
-                </span>
-            </div>
-
-            <p class="text-sm text-slate-600 mb-4">
-                Pour les goat qui veulent soutenir DelDevCode en ayant quelques avantages.
-            </p>
-
-            <div class="mb-4">
-                <div class="text-2xl font-bold text-slate-900">
-                    5€
-                    <span class="text-sm font-normal text-slate-500">/ an</span>
-                </div>
-            </div>
-
-            <ul class="text-sm text-slate-700 space-y-1.5 mb-4">
-                <li>🚀 <span class="font-semibold">1000 messages / heure</span></li>
-                <li>🔑 <span class="font-semibold">3 clés API</span> pour tes projets</li>
-                <li>🔑 <span class="font-semibold">300 req/m</span> pour tes clés API</li>
-                <li>👍 <span class="font-semibold">Réaction</span> aux messages</li>
-                <li>⭐ Badge Plus sur ton compte <span class="text-xs text-slate-500">(bientôt)</span></li>
-            </ul>
-
-            <div class="mt-auto space-y-2">
-                {% if plan == "plus" %}
-                    <button class="w-full inline-flex items-center justify-center px-4 py-2 rounded-md bg-emerald-600 text-white text-sm font-medium cursor-default">
-                        Tu es déjà en Plus 🎉
-                    </button>
-                    <p class="text-xs text-emerald-700 text-center">
-                        Merci de soutenir DelDevCode ❤️
-                    </p>
-                {% else %}
-                    <form action="{{ url_for('billing.plus_confirm') }}" method="post">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button type="submit" class="w-full inline-flex items-center justify-center px-4 py-2 rounded-md bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 transition">
-                            Passer à DelDevCode Plus
-                        </button>
-                    </form>
-                    <p class="text-[11px] text-slate-500 text-center">
-                        Paiements sécurisés via Stripe. Tu peux annuler quand tu veux.
-                    </p>
-                {% endif %}
-            </div>
-        </article>
-
-    </section>
-
+      <div class="mt-auto space-y-2">
+        {% if plan == "plus" %}
+        <button
+          class="w-full inline-flex items-center justify-center px-4 py-2 rounded-md bg-emerald-600 text-white text-sm font-medium cursor-default"
+        >
+          Tu es déjà en Plus 🎉
+        </button>
+        <p class="text-xs text-emerald-700 text-center">
+          Merci de soutenir DelDevCode ❤️
+        </p>
+        {% else %}
+        <form action="{{ url_for('billing.plus_confirm') }}" method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <button
+            type="submit"
+            class="w-full inline-flex items-center justify-center px-4 py-2 rounded-md bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 transition"
+          >
+            Passer à DelDevCode Plus
+          </button>
+        </form>
+        <p class="text-[11px] text-slate-500 text-center">
+          Paiements sécurisés via Stripe. Tu peux annuler quand tu veux.
+        </p>
+        {% endif %}
+      </div>
+    </article>
+  </section>
 </div>
 
 {% endblock %}

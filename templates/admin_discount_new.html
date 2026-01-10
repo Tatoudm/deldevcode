@@ -1,294 +1,381 @@
-{% extends "base.html" %}
-{% block title %}DDC Admin – Nouvelle réduction{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}DDC Admin – Nouvelle réduction{%
+endblock %} {% block content %}
 <div class="max-w-4xl mx-auto mt-8 space-y-4">
-
-    {% if erreur %}
-        <div class="mb-2">
-            <div class="bg-red-50 text-red-800 border border-red-200 px-4 py-3 rounded-xl shadow-sm text-sm">
-                {{ erreur }}
-            </div>
-        </div>
-    {% endif %}
-
-    {% if message %}
-        <div class="mb-2">
-            <div class="bg-emerald-50 text-emerald-800 border border-emerald-200 px-4 py-3 rounded-xl shadow-sm text-sm">
-                {{ message }}
-            </div>
-        </div>
-    {% endif %}
-
-    <div class="flex items-center justify-between">
-        <h1 class="text-2xl font-bold text-slate-900">
-            Gérer les réductions
-        </h1>
-        <a href="{{ url_for('admin.admin_panel') }}" class="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 text-sm hover:bg-slate-50">
-            ← Retour au panneau admin
-        </a>
+  {% if erreur %}
+  <div class="mb-2">
+    <div
+      class="bg-red-50 text-red-800 border border-red-200 px-4 py-3 rounded-xl shadow-sm text-sm"
+    >
+      {{ erreur }}
     </div>
+  </div>
+  {% endif %} {% if message %}
+  <div class="mb-2">
+    <div
+      class="bg-emerald-50 text-emerald-800 border border-emerald-200 px-4 py-3 rounded-xl shadow-sm text-sm"
+    >
+      {{ message }}
+    </div>
+  </div>
+  {% endif %}
 
-    
-    <section class="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 space-y-4">
-        <h2 class="text-lg font-semibold text-slate-900 mb-1">
-            Créer une réduction
-        </h2>
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-bold text-slate-900">Gérer les réductions</h1>
+    <a
+      href="{{ url_for('admin.admin_panel') }}"
+      class="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 text-sm hover:bg-slate-50"
+    >
+      ← Retour au panneau admin
+    </a>
+  </div>
 
-        <form method="POST" action="{{ url_for('admin.admin_create_discount') }}" class="space-y-4">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <section
+    class="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 space-y-4"
+  >
+    <h2 class="text-lg font-semibold text-slate-900 mb-1">
+      Créer une réduction
+    </h2>
 
-            
-            <div class="grid md:grid-cols-3 gap-3">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Visibilité</label>
-                    <div class="flex items-center gap-3 text-sm text-slate-700">
-                        <label class="inline-flex items-center gap-1">
-                            <input type="radio" name="visibility" value="coupon" checked class="rounded border-slate-300">
-                            <span>Par coupon (code)</span>
-                        </label>
-                        <label class="inline-flex items-center gap-1">
-                            <input type="radio" name="visibility" value="auto" class="rounded border-slate-300">
-                            <span>Automatique (tout le monde)</span>
-                        </label>
-                    </div>
+    <form
+      method="POST"
+      action="{{ url_for('admin.admin_create_discount') }}"
+      class="space-y-4"
+    >
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+      <div class="grid md:grid-cols-3 gap-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1"
+            >Visibilité</label
+          >
+          <div class="flex items-center gap-3 text-sm text-slate-700">
+            <label class="inline-flex items-center gap-1">
+              <input
+                type="radio"
+                name="visibility"
+                value="coupon"
+                checked
+                class="rounded border-slate-300"
+              />
+              <span>Par coupon (code)</span>
+            </label>
+            <label class="inline-flex items-center gap-1">
+              <input
+                type="radio"
+                name="visibility"
+                value="auto"
+                class="rounded border-slate-300"
+              />
+              <span>Automatique (tout le monde)</span>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1"
+            >Produit</label
+          >
+          <select
+            name="product_scope"
+            class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+          >
+            <option value="plus" selected>DelDevCode Plus</option>
+            <option value="all">Tous les produits (futur)</option>
+          </select>
+        </div>
+
+        <div id="code-container">
+          <label class="block text-xs font-semibold text-slate-600 mb-1"
+            >Code (si par coupon)</label
+          >
+          <input
+            type="text"
+            name="code"
+            placeholder="PLUS2025"
+            class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 uppercase"
+          />
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-3 items-end">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1"
+            >Type de réduction</label
+          >
+          <div class="flex items-center gap-3 text-sm text-slate-700">
+            <label class="inline-flex items-center gap-1">
+              <input
+                type="radio"
+                name="discount_type"
+                value="percent"
+                checked
+                class="rounded border-slate-300"
+                id="dt-percent"
+              />
+              <span>Pourcentage</span>
+            </label>
+            <label class="inline-flex items-center gap-1">
+              <input
+                type="radio"
+                name="discount_type"
+                value="fixed_price"
+                class="rounded border-slate-300"
+                id="dt-fixed"
+              />
+              <span>Nouveau prix fixe</span>
+            </label>
+          </div>
+        </div>
+
+        <div id="percent-container">
+          <label class="block text-xs font-semibold text-slate-600 mb-1"
+            >% de réduction</label
+          >
+          <input
+            type="number"
+            name="percent_off"
+            min="1"
+            max="99"
+            placeholder="ex: 20"
+            class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+            id="percent-input"
+          />
+          <p class="mt-1 text-[11px] text-slate-500" id="percent-preview">
+            Prix actuel Plus : {{ "%.2f"|format(base_price_plus) }}€/an → après
+            réduction : ...
+          </p>
+        </div>
+
+        <div id="fixed-container" class="hidden">
+          <label class="block text-xs font-semibold text-slate-600 mb-1"
+            >Nouveau prix Plus (€ / an)</label
+          >
+          <input
+            type="text"
+            name="fixed_price_plus"
+            placeholder="ex: 3.50"
+            class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+            id="fixed-input"
+          />
+          <p class="mt-1 text-[11px] text-slate-500">
+            Doit être inférieur au prix actuel ({{
+            "%.2f"|format(base_price_plus) }}€/an).
+          </p>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1"
+            >Valide à partir du</label
+          >
+          <input
+            type="date"
+            name="valid_from"
+            class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+          />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1"
+            >Valide jusqu'au</label
+          >
+          <input
+            type="date"
+            name="valid_until"
+            class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+          />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1"
+            >Utilisations max</label
+          >
+          <input
+            type="number"
+            name="max_uses"
+            min="1"
+            placeholder="Vide = infini"
+            class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+          />
+        </div>
+      </div>
+
+      <div class="pt-2">
+        <button
+          type="submit"
+          class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 transition"
+        >
+          Créer la réduction
+        </button>
+      </div>
+    </form>
+
+    <p class="mt-2 text-xs text-slate-500">
+      Les réductions "par coupon" utilisent un code que l'utilisateur saisit
+      avant le paiement. Les réductions "automatiques" s'appliquent à tout le
+      monde pendant la période de validité.
+    </p>
+  </section>
+
+  <section
+    class="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 space-y-3"
+  >
+    <h2 class="text-lg font-semibold text-slate-900">Réductions actives</h2>
+    <p class="text-xs text-slate-500">
+      Ces réductions sont actuellement prises en compte dans le checkout Plus.
+    </p>
+
+    {% if active_discounts and active_discounts|length > 0 %}
+    <div class="mt-2 border border-slate-200 rounded-xl overflow-hidden">
+      <table class="w-full text-sm">
+        <thead
+          class="bg-slate-50 text-slate-600 text-xs uppercase tracking-wide"
+        >
+          <tr>
+            <th class="px-3 py-2 text-left">Type</th>
+            <th class="px-3 py-2 text-left">Visibilité</th>
+            <th class="px-3 py-2 text-left">Produit(s)</th>
+            <th class="px-3 py-2 text-left">Période</th>
+            <th class="px-3 py-2 text-left">Détail</th>
+            <th class="px-3 py-2 text-right">Action</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          {% for d in active_discounts %}
+          <tr class="hover:bg-slate-50/50">
+            <td class="px-3 py-2 align-top">
+              {% if d.discount_type == 'percent' %}
+              <span
+                class="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-medium"
+              >
+                % de réduction
+              </span>
+              {% elif d.discount_type == 'fixed_price' %}
+              <span
+                class="inline-flex items-center px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 text-[11px] font-medium"
+              >
+                Prix fixe
+              </span>
+              {% else %}
+              <span class="text-xs text-slate-500">Inconnu</span>
+              {% endif %}
+            </td>
+
+            <td class="px-3 py-2 align-top text-xs text-slate-700">
+              {% if d.visibility == 'coupon' %}
+              <div class="space-y-0.5">
+                <span
+                  class="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-900 text-white text-[11px] font-medium"
+                >
+                  Par coupon
+                </span>
+                {% if d.display_code %}
+                <div class="text-[11px] text-slate-600">
+                  Code :
+                  <span class="font-mono font-semibold"
+                    >{{ d.display_code }}</span
+                  >
                 </div>
+                {% endif %}
+              </div>
+              {% elif d.visibility == 'auto' %}
+              <span
+                class="inline-flex items-center px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 text-[11px] font-medium"
+              >
+                Automatique
+              </span>
+              {% else %}
+              <span class="text-xs text-slate-500">?</span>
+              {% endif %}
+            </td>
 
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Produit</label>
-                    <select name="product_scope" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-                        <option value="plus" selected>DelDevCode Plus</option>
-                        <option value="all">Tous les produits (futur)</option>
-                    </select>
-                </div>
+            <td class="px-3 py-2 align-top text-xs text-slate-700">
+              {% if d.products %} {{ d.products|join(", ") }} {% else %} - {%
+              endif %}
+            </td>
 
-                <div id="code-container">
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Code (si par coupon)</label>
-                    <input type="text" name="code" placeholder="PLUS2025" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 uppercase">
-                </div>
-            </div>
+            <td class="px-3 py-2 align-top text-xs text-slate-700">
+              {% set vf = d.valid_from %} {% set vu = d.valid_until %} {% if vf
+              %} {{ vf.strftime("%d/%m/%Y") }} {% else %} — {% endif %}  →  {%
+              if vu %} {{ vu.strftime("%d/%m/%Y") }} {% else %} ∞ {% endif %}
+            </td>
 
-            
-            <div class="grid md:grid-cols-3 gap-3 items-end">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Type de réduction</label>
-                    <div class="flex items-center gap-3 text-sm text-slate-700">
-                        <label class="inline-flex items-center gap-1">
-                            <input type="radio" name="discount_type" value="percent" checked class="rounded border-slate-300" id="dt-percent">
-                            <span>Pourcentage</span>
-                        </label>
-                        <label class="inline-flex items-center gap-1">
-                            <input type="radio" name="discount_type" value="fixed_price" class="rounded border-slate-300" id="dt-fixed">
-                            <span>Nouveau prix fixe</span>
-                        </label>
-                    </div>
-                </div>
+            <td class="px-3 py-2 align-top text-xs text-slate-700">
+              {% if d.discount_type == 'percent' and d.percent_off %} -{{
+              d.percent_off }}% {% elif d.discount_type == 'fixed_price' and
+              d.new_price_eur is not none %} Nouveau prix : {{
+              "%.2f"|format(d.new_price_eur) }}€ {% else %} - {% endif %}
+            </td>
 
-                <div id="percent-container">
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">% de réduction</label>
-                    <input type="number" name="percent_off" min="1" max="99" placeholder="ex: 20" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" id="percent-input">
-                    <p class="mt-1 text-[11px] text-slate-500" id="percent-preview">
-                        Prix actuel Plus : {{ "%.2f"|format(base_price_plus) }}€/an → après réduction : ...
-                    </p>
-                </div>
-
-                <div id="fixed-container" class="hidden">
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nouveau prix Plus (€ / an)</label>
-                    <input type="text" name="fixed_price_plus" placeholder="ex: 3.50" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" id="fixed-input">
-                    <p class="mt-1 text-[11px] text-slate-500">
-                        Doit être inférieur au prix actuel ({{ "%.2f"|format(base_price_plus) }}€/an).
-                    </p>
-                </div>
-            </div>
-
-            
-            <div class="grid md:grid-cols-3 gap-3">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Valide à partir du</label>
-                    <input type="date" name="valid_from" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Valide jusqu'au</label>
-                    <input type="date" name="valid_until" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Utilisations max</label>
-                    <input type="number" name="max_uses" min="1" placeholder="Vide = infini" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-                </div>
-            </div>
-
-            <div class="pt-2">
-                <button type="submit" class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 transition">
-                    Créer la réduction
+            <td class="px-3 py-2 align-top text-right">
+              <form
+                method="post"
+                action="{{ url_for('admin.admin_disable_discount', discount_id=d._id) }}"
+                onsubmit="return confirm('Désactiver cette réduction ?');"
+              >
+                <input
+                  type="hidden"
+                  name="csrf_token"
+                  value="{{ csrf_token() }}"
+                />
+                <button
+                  type="submit"
+                  class="inline-flex items-center px-3 py-1.5 rounded-md border border-red-200 text-red-700 text-xs font-medium hover:bg-red-50"
+                >
+                  Désactiver
                 </button>
-            </div>
-        </form>
-
-        <p class="mt-2 text-xs text-slate-500">
-            Les réductions "par coupon" utilisent un code que l'utilisateur saisit avant le paiement.
-            Les réductions "automatiques" s'appliquent à tout le monde pendant la période de validité.
-        </p>
-    </section>
-
-    
-    <section class="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 space-y-3">
-        <h2 class="text-lg font-semibold text-slate-900">
-            Réductions actives
-        </h2>
-        <p class="text-xs text-slate-500">
-            Ces réductions sont actuellement prises en compte dans le checkout Plus.
-        </p>
-
-        {% if active_discounts and active_discounts|length > 0 %}
-            <div class="mt-2 border border-slate-200 rounded-xl overflow-hidden">
-                <table class="w-full text-sm">
-                    <thead class="bg-slate-50 text-slate-600 text-xs uppercase tracking-wide">
-                        <tr>
-                            <th class="px-3 py-2 text-left">Type</th>
-                            <th class="px-3 py-2 text-left">Visibilité</th>
-                            <th class="px-3 py-2 text-left">Produit(s)</th>
-                            <th class="px-3 py-2 text-left">Période</th>
-                            <th class="px-3 py-2 text-left">Détail</th>
-                            <th class="px-3 py-2 text-right">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100">
-                        {% for d in active_discounts %}
-                            <tr class="hover:bg-slate-50/50">
-                                
-                                <td class="px-3 py-2 align-top">
-                                    {% if d.discount_type == 'percent' %}
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-medium">
-                                            % de réduction
-                                        </span>
-                                    {% elif d.discount_type == 'fixed_price' %}
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 text-[11px] font-medium">
-                                            Prix fixe
-                                        </span>
-                                    {% else %}
-                                        <span class="text-xs text-slate-500">Inconnu</span>
-                                    {% endif %}
-                                </td>
-
-                                
-                                <td class="px-3 py-2 align-top text-xs text-slate-700">
-                                    {% if d.visibility == 'coupon' %}
-                                        <div class="space-y-0.5">
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-900 text-white text-[11px] font-medium">
-                                                Par coupon
-                                            </span>
-                                            {% if d.display_code %}
-                                                <div class="text-[11px] text-slate-600">
-                                                    Code : <span class="font-mono font-semibold">{{ d.display_code }}</span>
-                                                </div>
-                                            {% endif %}
-                                        </div>
-                                    {% elif d.visibility == 'auto' %}
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 text-[11px] font-medium">
-                                            Automatique
-                                        </span>
-                                    {% else %}
-                                        <span class="text-xs text-slate-500">?</span>
-                                    {% endif %}
-                                </td>
-
-                                
-                                <td class="px-3 py-2 align-top text-xs text-slate-700">
-                                    {% if d.products %}
-                                        {{ d.products|join(", ") }}
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                </td>
-
-                                
-                                <td class="px-3 py-2 align-top text-xs text-slate-700">
-                                    {% set vf = d.valid_from %}
-                                    {% set vu = d.valid_until %}
-                                    {% if vf %}
-                                        {{ vf.strftime("%d/%m/%Y") }}
-                                    {% else %}
-                                        —
-                                    {% endif %}
-                                     → 
-                                    {% if vu %}
-                                        {{ vu.strftime("%d/%m/%Y") }}
-                                    {% else %}
-                                        ∞
-                                    {% endif %}
-                                </td>
-
-                                
-                                <td class="px-3 py-2 align-top text-xs text-slate-700">
-                                    {% if d.discount_type == 'percent' and d.percent_off %}
-                                        -{{ d.percent_off }}%
-                                    {% elif d.discount_type == 'fixed_price' and d.new_price_eur is not none %}
-                                        Nouveau prix : {{ "%.2f"|format(d.new_price_eur) }}€
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                </td>
-
-                                
-                                <td class="px-3 py-2 align-top text-right">
-                                    <form method="post" action="{{ url_for('admin.admin_disable_discount', discount_id=d._id) }}" onsubmit="return confirm('Désactiver cette réduction ?');">
-                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                        <button type="submit" class="inline-flex items-center px-3 py-1.5 rounded-md border border-red-200 text-red-700 text-xs font-medium hover:bg-red-50">
-                                            Désactiver
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        {% else %}
-            <p class="text-xs text-slate-500 mt-2">
-                Aucune réduction active pour le moment.
-            </p>
-        {% endif %}
-    </section>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="text-xs text-slate-500 mt-2">
+      Aucune réduction active pour le moment.
+    </p>
+    {% endif %}
+  </section>
 </div>
 
 <script>
-    const BASE_PRICE_PLUS = {{ "%.2f"|format(base_price_plus) }};
+  const BASE_PRICE_PLUS = {{ "%.2f"|format(base_price_plus) }};
 
-    (function () {
-        const percentContainer = document.getElementById('percent-container');
-        const fixedContainer = document.getElementById('fixed-container');
-        const percentInput = document.getElementById('percent-input');
-        const percentPreview = document.getElementById('percent-preview');
+  (function () {
+      const percentContainer = document.getElementById('percent-container');
+      const fixedContainer = document.getElementById('fixed-container');
+      const percentInput = document.getElementById('percent-input');
+      const percentPreview = document.getElementById('percent-preview');
 
-        const dtPercent = document.getElementById('dt-percent');
-        const dtFixed = document.getElementById('dt-fixed');
+      const dtPercent = document.getElementById('dt-percent');
+      const dtFixed = document.getElementById('dt-fixed');
 
-        function updateType() {
-            if (dtPercent.checked) {
-                percentContainer.classList.remove('hidden');
-                fixedContainer.classList.add('hidden');
-            } else {
-                fixedContainer.classList.remove('hidden');
-                percentContainer.classList.add('hidden');
-            }
-        }
+      function updateType() {
+          if (dtPercent.checked) {
+              percentContainer.classList.remove('hidden');
+              fixedContainer.classList.add('hidden');
+          } else {
+              fixedContainer.classList.remove('hidden');
+              percentContainer.classList.add('hidden');
+          }
+      }
 
-        function updatePreview() {
-            const v = parseFloat(percentInput.value || '0');
-            if (!v || v <= 0 || v >= 100) {
-                percentPreview.textContent = "Prix actuel Plus : " + BASE_PRICE_PLUS.toFixed(2) + "€/an → après réduction : ...";
-                return;
-            }
-            const newPrice = BASE_PRICE_PLUS * (1 - v / 100);
-            percentPreview.textContent = "Prix actuel Plus : " + BASE_PRICE_PLUS.toFixed(2) + "€/an → après réduction : " + newPrice.toFixed(2) + "€/an";
-        }
+      function updatePreview() {
+          const v = parseFloat(percentInput.value || '0');
+          if (!v || v <= 0 || v >= 100) {
+              percentPreview.textContent = "Prix actuel Plus : " + BASE_PRICE_PLUS.toFixed(2) + "€/an → après réduction : ...";
+              return;
+          }
+          const newPrice = BASE_PRICE_PLUS * (1 - v / 100);
+          percentPreview.textContent = "Prix actuel Plus : " + BASE_PRICE_PLUS.toFixed(2) + "€/an → après réduction : " + newPrice.toFixed(2) + "€/an";
+      }
 
-        dtPercent.addEventListener('change', updateType);
-        dtFixed.addEventListener('change', updateType);
-        percentInput.addEventListener('input', updatePreview);
+      dtPercent.addEventListener('change', updateType);
+      dtFixed.addEventListener('change', updateType);
+      percentInput.addEventListener('input', updatePreview);
 
-        updateType();
-        updatePreview();
-    })();
+      updateType();
+      updatePreview();
+  })();
 </script>
 {% endblock %}

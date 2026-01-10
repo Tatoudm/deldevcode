@@ -1,323 +1,436 @@
-{% extends "base.html" %}
-
-{% block title %}Profil • DelDevCode{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}Profil • DelDevCode{% endblock %} {%
+block content %}
 
 <div class="max-w-3xl mx-auto mt-8 mb-12 space-y-8">
+  {% if erreur %}
+  <div
+    class="bg-red-50 text-red-800 border border-red-200 px-4 py-3 rounded-xl shadow-sm flex items-start gap-3"
+  >
+    <span class="text-red-500 text-xl font-bold leading-none mt-0.5">!</span>
+    <p class="text-sm md:text-base">{{ erreur }}</p>
+  </div>
+  {% endif %} {% if success %}
+  <div
+    class="bg-emerald-50 text-emerald-800 border border-emerald-200 px-4 py-3 rounded-xl shadow-sm flex items-start gap-3"
+  >
+    <span class="text-emerald-500 text-xl font-bold leading-none mt-0.5"
+      >✓</span
+    >
+    <p class="text-sm md:text-base">{{ success }}</p>
+  </div>
+  {% endif %} {# Header profil #}
+  <section
+    class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col md:flex-row items-center md:items-center gap-4"
+  >
+    <div class="shrink-0">
+      <div class="relative">
+        <img
+          src="{{ url_for('static', filename='pdp/' ~ pdp) }}"
+          alt="Avatar"
+          class="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover border border-slate-200 shadow-sm"
+        />
+        {% if is_plus %}
+        <span
+          class="absolute -bottom-1 -right-1 inline-flex items-center justify-center px-2 py-0.5 rounded-full bg-amber-400 text-xs font-semibold text-slate-900 shadow"
+        >
+          Plus
+        </span>
+        {% endif %}
+      </div>
+    </div>
+    <div class="flex-1 text-center md:text-left">
+      <h1
+        class="text-2xl md:text-3xl font-semibold text-slate-900 flex items-center justify-center md:justify-start gap-2"
+      >
+        {{ nom }} {% if is_plus %}
+        <span
+          class="inline-flex items-center px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold border border-amber-200"
+        >
+          ✨ Plus
+        </span>
+        {% endif %}
+      </h1>
+      <p class="mt-2 text-sm text-slate-500">
+        Gère tes paramètres de compte, ta sécurité et ton abonnement.
+      </p>
+    </div>
+  </section>
 
-    {% if erreur %}
-        <div class="bg-red-50 text-red-800 border border-red-200 px-4 py-3 rounded-xl shadow-sm flex items-start gap-3">
-            <span class="text-red-500 text-xl font-bold leading-none mt-0.5">!</span>
-            <p class="text-sm md:text-base">
-                {{ erreur }}
-            </p>
-        </div>
-    {% endif %}
+  {# PROFIL PUBLIC #}
+  <section
+    class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-6"
+  >
+    <div class="flex items-center gap-2">
+      <span class="text-lg">🙋‍♂️</span>
+      <h2 class="text-lg font-semibold text-slate-900">Profil public</h2>
+    </div>
+    <p class="text-sm text-slate-500">
+      Modifie ton pseudo visible par les autres utilisateurs. La photo de profil
+      est réservée aux membres Plus.
+    </p>
 
-    {% if success %}
-        <div class="bg-emerald-50 text-emerald-800 border border-emerald-200 px-4 py-3 rounded-xl shadow-sm flex items-start gap-3">
-            <span class="text-emerald-500 text-xl font-bold leading-none mt-0.5">✓</span>
-            <p class="text-sm md:text-base">
-                {{ success }}
-            </p>
+    {# Changement de pseudo #}
+    <form method="post" class="space-y-4">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      <input type="hidden" name="action" value="update_username" />
+      <div>
+        <label
+          for="new_username"
+          class="block text-sm font-medium text-slate-700"
+        >
+          Pseudo
+        </label>
+        <div class="mt-1">
+          <input
+            type="text"
+            id="new_username"
+            name="new_username"
+            value="{{ nom }}"
+            class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-slate-50/60"
+          />
         </div>
-    {% endif %}
-
-    {# Header profil #}
-    <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col md:flex-row items-center md:items-center gap-4">
-        <div class="shrink-0">
-            <div class="relative">
-                <img src="{{ url_for('static', filename='pdp/' ~ pdp) }}" alt="Avatar" class="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover border border-slate-200 shadow-sm">
-                {% if is_plus %}
-                    <span class="absolute -bottom-1 -right-1 inline-flex items-center justify-center px-2 py-0.5 rounded-full bg-amber-400 text-xs font-semibold text-slate-900 shadow">
-                        Plus
-                    </span>
-                {% endif %}
-            </div>
-        </div>
-        <div class="flex-1 text-center md:text-left">
-            <h1 class="text-2xl md:text-3xl font-semibold text-slate-900 flex items-center justify-center md:justify-start gap-2">
-                {{ nom }}
-                {% if is_plus %}
-                    <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold border border-amber-200">
-                        ✨ Plus
-                    </span>
-                {% endif %}
-            </h1>
-            <p class="mt-2 text-sm text-slate-500">
-                Gère tes paramètres de compte, ta sécurité et ton abonnement.
-            </p>
-        </div>
-    </section>
-
-    {# PROFIL PUBLIC #}
-    <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-6">
-        <div class="flex items-center gap-2">
-            <span class="text-lg">🙋‍♂️</span>
-            <h2 class="text-lg font-semibold text-slate-900">Profil public</h2>
-        </div>
-        <p class="text-sm text-slate-500">
-            Modifie ton pseudo visible par les autres utilisateurs. La photo de profil est réservée aux membres Plus.
+        <p class="mt-1 text-xs text-slate-400">
+          3 à 20 caractères. Lettres, chiffres, tirets et underscores
+          uniquement.
         </p>
+      </div>
+      <div class="flex justify-end">
+        <button
+          type="submit"
+          class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 transition"
+        >
+          <span>Enregistrer le pseudo</span>
+        </button>
+      </div>
+    </form>
 
-        {# Changement de pseudo #}
-        <form method="post" class="space-y-4">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <input type="hidden" name="action" value="update_username">
-            <div>
-                <label for="new_username" class="block text-sm font-medium text-slate-700">
-                    Pseudo
-                </label>
-                <div class="mt-1">
-                    <input type="text" id="new_username" name="new_username" value="{{ nom }}" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-slate-50/60">
-                </div>
-                <p class="mt-1 text-xs text-slate-400">
-                    3 à 20 caractères. Lettres, chiffres, tirets et underscores uniquement.
-                </p>
-            </div>
-            <div class="flex justify-end">
-                <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 transition">
-                    <span>Enregistrer le pseudo</span>
-                </button>
-            </div>
-        </form>
+    <div class="border-t border-slate-100 pt-4"></div>
 
-        <div class="border-t border-slate-100 pt-4"></div>
+    {# Changement de photo de profil (Plus) #}
+    <div class="space-y-3">
+      <div class="flex items-center gap-2">
+        <span class="text-lg">🖼️</span>
+        <h3 class="text-sm font-semibold text-slate-900">Photo de profil</h3>
+      </div>
 
-        {# Changement de photo de profil (Plus) #}
-        <div class="space-y-3">
-            <div class="flex items-center gap-2">
-                <span class="text-lg">🖼️</span>
-                <h3 class="text-sm font-semibold text-slate-900">Photo de profil</h3>
-            </div>
+      {% if is_plus %}
+      <form method="post" enctype="multipart/form-data" class="space-y-3">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <input type="hidden" name="action" value="update_pdp" />
+        <div>
+          <label
+            for="pdp_file"
+            class="block text-sm font-medium text-slate-700"
+          >
+            Nouvelle photo de profil
+          </label>
+          <input
+            type="file"
+            id="pdp_file"
+            name="pdp_file"
+            accept="image/png,image/jpeg,image/jpg,image/webp"
+            class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+          />
+          <p class="mt-1 text-xs text-slate-400">
+            Formats autorisés : PNG, JPG, JPEG, WEBP. Taille max ~10 Mo.
+          </p>
+          <p class="mt-1 text-xs text-slate-400">
+            L'image sera stockée de façon sécurisée sur les serveurs de
+            DelDevCode.
+          </p>
+        </div>
+        <div class="flex justify-end">
+          <button
+            type="submit"
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 transition"
+          >
+            Mettre à jour la photo
+          </button>
+        </div>
+      </form>
+      {% else %}
+      <div
+        class="px-3 py-3 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-sm text-slate-500 flex items-start gap-3"
+      >
+        <span class="mt-0.5 text-lg">🔒</span>
+        <div>
+          <p class="font-medium text-slate-700">Réservé aux membres Plus</p>
+          <p class="text-xs mt-1">
+            Seuls les membres Plus peuvent modifier leur photo de profil. Tu
+            peux t'abonner à Plus dans la section
+            <span class="font-semibold">Compte</span> ci-dessous.
+          </p>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </section>
 
-            {% if is_plus %}
-                <form method="post" enctype="multipart/form-data" class="space-y-3">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <input type="hidden" name="action" value="update_pdp">
-                    <div>
-                        <label for="pdp_file" class="block text-sm font-medium text-slate-700">
-                            Nouvelle photo de profil
-                        </label>
-                        <input type="file" id="pdp_file" name="pdp_file" accept="image/png,image/jpeg,image/jpg,image/webp" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
-                        <p class="mt-1 text-xs text-slate-400">
-                            Formats autorisés : PNG, JPG, JPEG, WEBP. Taille max ~10 Mo.
-                        </p>
-                        <p class="mt-1 text-xs text-slate-400">
-                            L'image sera stockée de façon sécurisée sur les serveurs de DelDevCode.
-                        </p>
-                    </div>
-                    <div class="flex justify-end">
-                        <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 transition">
-                            Mettre à jour la photo
-                        </button>
-                    </div>
-                </form>
+  {# SÉCURITÉ #}
+  <section
+    class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-6"
+  >
+    <div class="flex items-center gap-2">
+      <span class="text-lg">🛡️</span>
+      <h2 class="text-lg font-semibold text-slate-900">Sécurité</h2>
+    </div>
+
+    {# Changement de mot de passe #}
+    <div class="space-y-3">
+      <h3 class="text-sm font-semibold text-slate-900">
+        Changer le mot de passe
+      </h3>
+      <form method="post" class="space-y-4">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <input type="hidden" name="action" value="update_password" />
+        <div>
+          <label
+            for="current_password"
+            class="block text-sm font-medium text-slate-700"
+          >
+            Mot de passe actuel
+          </label>
+          <input
+            type="password"
+            id="current_password"
+            name="current_password"
+            class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+            autocomplete="current-password"
+          />
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label
+              for="new_password"
+              class="block text-sm font-medium text-slate-700"
+            >
+              Nouveau mot de passe
+            </label>
+            <input
+              type="password"
+              id="new_password"
+              name="new_password"
+              class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              autocomplete="new-password"
+            />
+          </div>
+          <div>
+            <label
+              for="confirm_password"
+              class="block text-sm font-medium text-slate-700"
+            >
+              Confirmer le nouveau mot de passe
+            </label>
+            <input
+              type="password"
+              id="confirm_password"
+              name="confirm_password"
+              class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              autocomplete="new-password"
+            />
+          </div>
+        </div>
+        <p class="mt-1 text-xs text-slate-400">
+          Minimum 8 caractères, avec au moins un chiffre.
+        </p>
+        <div class="flex justify-end">
+          <button
+            type="submit"
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 transition"
+          >
+            Mettre à jour le mot de passe
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="border-t border-slate-100 pt-4"></div>
+
+    {# A2F #}
+    <div class="space-y-3">
+      <h3 class="text-sm font-semibold text-slate-900">
+        Authentification à deux facteurs (A2F)
+      </h3>
+      <form method="post" class="space-y-3">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <input type="hidden" name="action" value="toggle_twofa" />
+        <div class="flex items-center justify-between gap-4">
+          <div>
+            <p class="text-sm text-slate-700">
+              Ajouter une étape de sécurité lors de la connexion.
+            </p>
+            <p class="text-xs text-slate-400 mt-1">
+              Un code sera demandé en plus de ton mot de passe quand tu te
+              connectes.
+            </p>
+          </div>
+
+          <label
+            for="twofa_enabled"
+            class="inline-flex items-center cursor-pointer"
+          >
+            <input
+              type="checkbox"
+              id="twofa_enabled"
+              name="twofa_enabled"
+              class="sr-only"
+              {%
+              if
+              twofa_enabled
+              %}checked{%
+              endif
+              %}
+            />
+            <span
+              id="twofa_track"
+              class="relative inline-flex h-6 w-11 items-center rounded-full transition bg-slate-300"
+            >
+              <span
+                id="twofa_knob"
+                class="inline-block h-5 w-5 rounded-full bg-white shadow transform transition translate-x-1"
+              >
+              </span>
+            </span>
+          </label>
+        </div>
+
+        {% if not email %}
+        <p class="text-xs text-red-500">
+          Tu dois avoir une adresse email associée à ton compte pour activer
+          l'A2F.
+        </p>
+        {% endif %}
+        <div class="flex justify-end">
+          <button
+            type="submit"
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 transition"
+          >
+            Mettre à jour l'A2F
+          </button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  {# COMPTE #}
+  <section
+    class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-6"
+  >
+    <div class="flex items-center gap-2">
+      <span class="text-lg">⚙️</span>
+      <h2 class="text-lg font-semibold text-slate-900">Compte</h2>
+    </div>
+
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-slate-700">
+          Adresse email
+        </label>
+        <div
+          class="mt-1 px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-700"
+        >
+          {{ email or "Aucune adresse email définie" }}
+        </div>
+        <p class="mt-1 text-xs text-slate-400">
+          L'email n'est pas modifiable depuis cette page.
+        </p>
+      </div>
+
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="space-y-1">
+          <p class="text-sm font-medium text-slate-800">
+            Statut Plus : {% if is_plus %}
+            <span
+              class="ml-1 inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200"
+            >
+              Actif
+            </span>
             {% else %}
-                <div class="px-3 py-3 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-sm text-slate-500 flex items-start gap-3">
-                    <span class="mt-0.5 text-lg">🔒</span>
-                    <div>
-                        <p class="font-medium text-slate-700">Réservé aux membres Plus</p>
-                        <p class="text-xs mt-1">
-                            Seuls les membres Plus peuvent modifier leur photo de profil.
-                            Tu peux t'abonner à Plus dans la section <span class="font-semibold">Compte</span> ci-dessous.
-                        </p>
-                    </div>
-                </div>
+            <span
+              class="ml-1 inline-flex items-center px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold border border-slate-200"
+            >
+              Free
+            </span>
             {% endif %}
-        </div>
-    </section>
-
-    {# SÉCURITÉ #}
-    <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-6">
-        <div class="flex items-center gap-2">
-            <span class="text-lg">🛡️</span>
-            <h2 class="text-lg font-semibold text-slate-900">Sécurité</h2>
-        </div>
-
-        {# Changement de mot de passe #}
-        <div class="space-y-3">
-            <h3 class="text-sm font-semibold text-slate-900">Changer le mot de passe</h3>
-            <form method="post" class="space-y-4">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <input type="hidden" name="action" value="update_password">
-                <div>
-                    <label for="current_password" class="block text-sm font-medium text-slate-700">
-                        Mot de passe actuel
-                    </label>
-                    <input type="password" id="current_password" name="current_password" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent" autocomplete="current-password">
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label for="new_password" class="block text-sm font-medium text-slate-700">
-                            Nouveau mot de passe
-                        </label>
-                        <input type="password" id="new_password" name="new_password" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent" autocomplete="new-password">
-                    </div>
-                    <div>
-                        <label for="confirm_password" class="block text-sm font-medium text-slate-700">
-                            Confirmer le nouveau mot de passe
-                        </label>
-                        <input type="password" id="confirm_password" name="confirm_password" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent" autocomplete="new-password">
-                    </div>
-                </div>
-                <p class="mt-1 text-xs text-slate-400">
-                    Minimum 8 caractères, avec au moins un chiffre.
-                </p>
-                <div class="flex justify-end">
-                    <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 transition">
-                        Mettre à jour le mot de passe
-                    </button>
-                </div>
-            </form>
+          </p>
+          {% if is_plus %}
+          <p class="text-xs text-slate-400">Merci de soutenir DelDevCode ❤️</p>
+          {% else %}
+          <p class="text-xs text-slate-400">
+            Passe à Plus pour débloquer des fonctionnalités supplémentaires
+            (dont la photo de profil personnalisée).
+          </p>
+          {% endif %}
         </div>
 
-        <div class="border-t border-slate-100 pt-4"></div>
+        {% if not is_plus %}
+        <a
+          href="/plus"
+          class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 transition"
+        >
+          ✨ Devenir Plus
+        </a>
+        {% endif %}
+      </div>
 
-        {# A2F #}
-        <div class="space-y-3">
-            <h3 class="text-sm font-semibold text-slate-900">Authentification à deux facteurs (A2F)</h3>
-            <form method="post" class="space-y-3">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <input type="hidden" name="action" value="toggle_twofa">
-                <div class="flex items-center justify-between gap-4">
-                    <div>
-                        <p class="text-sm text-slate-700">
-                            Ajouter une étape de sécurité lors de la connexion.
-                        </p>
-                        <p class="text-xs text-slate-400 mt-1">
-                            Un code sera demandé en plus de ton mot de passe quand tu te connectes.
-                        </p>
-                    </div>
+      <div class="border-t border-slate-100 pt-4"></div>
 
-                    
-                    <label for="twofa_enabled" class="inline-flex items-center cursor-pointer">
-                        <input type="checkbox" id="twofa_enabled" name="twofa_enabled" class="sr-only" {% if twofa_enabled %}checked{% endif %}>
-                        <span id="twofa_track" class="relative inline-flex h-6 w-11 items-center rounded-full transition bg-slate-300">
-                            <span id="twofa_knob" class="inline-block h-5 w-5 rounded-full bg-white shadow transform transition translate-x-1">
-                            </span>
-                        </span>
-                    </label>
-                </div>
-
-                {% if not email %}
-                    <p class="text-xs text-red-500">
-                        Tu dois avoir une adresse email associée à ton compte pour activer l'A2F.
-                    </p>
-                {% endif %}
-                <div class="flex justify-end">
-                    <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 transition">
-                        Mettre à jour l'A2F
-                    </button>
-                </div>
-            </form>
-        </div>
-
-    </section>
-
-    {# COMPTE #}
-    <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-6">
-        <div class="flex items-center gap-2">
-            <span class="text-lg">⚙️</span>
-            <h2 class="text-lg font-semibold text-slate-900">Compte</h2>
-        </div>
-
-        <div class="space-y-4">
-            <div>
-                <label class="block text-sm font-medium text-slate-700">
-                    Adresse email
-                </label>
-                <div class="mt-1 px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-700">
-                    {{ email or "Aucune adresse email définie" }}
-                </div>
-                <p class="mt-1 text-xs text-slate-400">
-                    L'email n'est pas modifiable depuis cette page.
-                </p>
-            </div>
-
-            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-                <div class="space-y-1">
-                    <p class="text-sm font-medium text-slate-800">
-                        Statut Plus :
-                        {% if is_plus %}
-                            <span class="ml-1 inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200">
-                                Actif
-                            </span>
-                        {% else %}
-                            <span class="ml-1 inline-flex items-center px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold border border-slate-200">
-                                Free
-                            </span>
-                        {% endif %}
-                    </p>
-                    {% if is_plus %}
-                        <p class="text-xs text-slate-400">
-                            Merci de soutenir DelDevCode ❤️
-                        </p>
-                    {% else %}
-                        <p class="text-xs text-slate-400">
-                            Passe à Plus pour débloquer des fonctionnalités supplémentaires (dont la photo de profil personnalisée).
-                        </p>
-                    {% endif %}
-                </div>
-
-                {% if not is_plus %}
-                    <a href="/plus" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 transition">
-                        ✨ Devenir Plus
-                    </a>
-                {% endif %}
-            </div>
-
-            <div class="border-t border-slate-100 pt-4"></div>
-
-            <div class="space-y-3">
-                <h3 class="text-sm font-semibold text-red-600 flex items-center gap-2">
-                    <span>Supprimer mon compte</span>
-                </h3>
-                <p class="text-xs text-slate-500">
-                    Cette action est <span class="font-semibold">définitive</span>. Toutes tes données
-                    principales associées à ce compte (y compris tes messages) pourront être supprimées.
-                    Une confirmation par email sera nécessaire.
-                </p>
-                <form method="post" onsubmit="return confirm('Es-tu sûr de vouloir demander la suppression de ton compte ?');">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <input type="hidden" name="action" value="request_delete_account">
-                    <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-red-600 text-white text-sm font-medium hover:bg-red-500 transition">
-                        🗑️ Demander la suppression de mon compte
-                    </button>
-                </form>
-            </div>
-        </div>
-    </section>
-
+      <div class="space-y-3">
+        <h3 class="text-sm font-semibold text-red-600 flex items-center gap-2">
+          <span>Supprimer mon compte</span>
+        </h3>
+        <p class="text-xs text-slate-500">
+          Cette action est <span class="font-semibold">définitive</span>. Toutes
+          tes données principales associées à ce compte (y compris tes messages)
+          pourront être supprimées. Une confirmation par email sera nécessaire.
+        </p>
+        <form
+          method="post"
+          onsubmit="
+            return confirm(
+              'Es-tu sûr de vouloir demander la suppression de ton compte ?',
+            );
+          "
+        >
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <input type="hidden" name="action" value="request_delete_account" />
+          <button
+            type="submit"
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-red-600 text-white text-sm font-medium hover:bg-red-500 transition"
+          >
+            🗑️ Demander la suppression de mon compte
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", () => {
     const cb = document.getElementById("twofa_enabled");
     const track = document.getElementById("twofa_track");
     const knob = document.getElementById("twofa_knob");
     if (!cb || !track || !knob) return;
 
     function refreshTwofaSwitch() {
-        if (cb.checked) {
-            track.classList.remove("bg-slate-300");
-            track.classList.add("bg-emerald-500");
-            knob.classList.remove("translate-x-1");
-            knob.classList.add("translate-x-5");
-        } else {
-            track.classList.add("bg-slate-300");
-            track.classList.remove("bg-emerald-500");
-            knob.classList.add("translate-x-1");
-            knob.classList.remove("translate-x-5");
-        }
+      if (cb.checked) {
+        track.classList.remove("bg-slate-300");
+        track.classList.add("bg-emerald-500");
+        knob.classList.remove("translate-x-1");
+        knob.classList.add("translate-x-5");
+      } else {
+        track.classList.add("bg-slate-300");
+        track.classList.remove("bg-emerald-500");
+        knob.classList.add("translate-x-1");
+        knob.classList.remove("translate-x-5");
+      }
     }
 
     refreshTwofaSwitch();
 
     cb.addEventListener("change", refreshTwofaSwitch);
-});
+  });
 </script>
-
 
 {% endblock %}

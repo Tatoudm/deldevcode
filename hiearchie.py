@@ -1,5 +1,6 @@
 import os
 
+
 def print_tree(path, prefix=""):
     # Liste le contenu trié (dossiers puis fichiers)
     items = sorted(os.listdir(path))

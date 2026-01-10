@@ -97,3 +97,6 @@ cython_debug/
 .ruff_cache/
 .cursorignore
 .cursorindexingignore
+
+# Useless files
+hiearchie.py
